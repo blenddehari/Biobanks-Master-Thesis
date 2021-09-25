@@ -1,0 +1,22 @@
+{
+  "name": "biobanks_demo_idea",
+  "version": "1.0.0",
+  "description": "Demonstrating the idea of a rating system for Biobanks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "author": "Blend Dehari",
+  "license": "MIT",
+  "dependencies": {
+    "@vue/cli": "^4.5.13",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^4.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
