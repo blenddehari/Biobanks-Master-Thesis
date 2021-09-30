@@ -1,2 +1,25 @@
-/client
-node_modules
+/backend/client
+/backend/node_modules
+/fronted/.DS_Store
+/fronted/node_modules
+/fronted/dist
+
+
+# local env files
+/fronted/.env.local
+/fronted/.env.*.local
+
+# Log files
+/fronted/npm-debug.log*
+/fronted/yarn-debug.log*
+/fronted/yarn-error.log*
+/fronted/pnpm-debug.log*
+
+# Editor directories and files
+/fronted/.idea
+/fronted/.vscode
+/fronted/*.suo
+/fronted/*.ntvs*
+/fronted/*.njsproj
+/fronted/*.sln
+/fronted/*.sw?
