@@ -25,8 +25,8 @@ router.delete('/datasets/:id', async (req,res) => {
 })
 
 //Rank datasets
-router.get('/datasets/ranked', async (req, res) => {
-    res.send(await rankDatasets('dataAccuracy'))
+router.get('/datasets/ranked/:selectedMethod', async (req, res) => {
+    res.send(await rankDatasets(req.params.selectedMethod))
 })
 
 async function rankDatasets(method) {
@@ -73,8 +73,6 @@ async function rankDatasets(method) {
             if (el.ageTo === null) nullValues2 +=1
         }
 
-        //this should come from the request(frontend)
-        method='dataCompleteness'
         let reasonForRanking
 
         let returnRankedObject = {}
