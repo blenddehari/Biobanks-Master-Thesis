@@ -12,6 +12,8 @@
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-loader": "^15.9.8",
+    "vue-loading-overlay": "^4.0.4",
+    "vuelidate": "^0.7.6",
     "vuetify": "^2.5.8"
   },
   "devDependencies": {

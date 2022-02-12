@@ -1,7 +1,26 @@
 const express = require('express')
-const mongodb = require('mongodb')
+const queryService = require('../../services/queryService')
 
+const mongodb = require('mongodb')
 const router = express.Router()
+
+
+
+
+
+
+router.get('/data', async (req, res) => {
+    try{
+        const datasets = await queryService.getData()
+        if(datasets) {
+            res.send(datasets)
+        }
+    }
+    catch(e) {
+        console.error('Data could not be retrieved!')
+        throw 'Data could not be retrieved!'
+    }
+})
 
 //Get datasets
 router.get('/datasets', async (req, res) => {
