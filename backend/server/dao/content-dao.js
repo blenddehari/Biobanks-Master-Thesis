@@ -237,14 +237,17 @@ class ContentDAO {
             for (let tableName of tableNames) {
 
                 let whereClause = 'where ('
+                let selectQueryLoincColumns = ''
                 let counter = frontendQuery.length
                 for (let el of frontendQuery) {
-                    
+                    let searchByNumber = !isNaN(el.value.fromValue) && !isNaN(el.value.toValue)
+                    selectQueryLoincColumns += ` "${el.loincCode.loincnum}_from", "${el.loincCode.loincnum}_to", `
+                    if (searchByNumber) {
                     // whereClause += `("${el.loincCode.loincnum}_from"::integer BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::integer BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
 
                     // make this query only if the fromValue === toValue, otherwise make the query from before!
                     // if (el.value.fromValue === el.value.toValue) {
-                        whereClause += `(${el.value.fromValue} BETWEEN "${el.loincCode.loincnum}_from"::integer and "${el.loincCode.loincnum}_to"::integer) OR ( ${el.value.toValue} BETWEEN "${el.loincCode.loincnum}_from"::integer and "${el.loincCode.loincnum}_to"::integer) OR ("${el.loincCode.loincnum}_from"::integer BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::integer BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
+                        whereClause += `(${el.value.fromValue} BETWEEN "${el.loincCode.loincnum}_from"::numeric and "${el.loincCode.loincnum}_to"::numeric) OR ( ${el.value.toValue} BETWEEN "${el.loincCode.loincnum}_from"::numeric and "${el.loincCode.loincnum}_to"::numeric) OR ("${el.loincCode.loincnum}_from"::numeric BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::numeric BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
                     // }
                     // else {
                     //     whereClause += `("${el.loincCode.loincnum}_from"::integer BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::integer BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
@@ -261,11 +264,24 @@ class ContentDAO {
                 // TODO: in the future we might have two kinds of tables (indexes and collections(i.e. index_todaysDateAsId, collection_todaysDateAsId) and then similar to when we have two kinds of queries for getting loinc codes by code or name, we might make two different queries where if the name of the table starts with 'index_' we have the query just like below, whereas if the name of the table starts with 'collection_' then we do the query which will be all the same like the one for the index, except it will not have an index_id column! Then in frontend we will display N/A for index_id column when we send collections.)
                 // TODO: in the future, rewrite queries as parametrized queries instead of template string queries to prevent sql injections and do automatic sanitizing of the data
 
+                    }  
+                    // if we search by string (ex: 66476-3(country): europe)
+                    else {
+                        whereClause += `"${el.loincCode.loincnum}_from" LIKE '%${el.value.fromValue}%' OR "${el.loincCode.loincnum}_to" LIKE '%${el.value.toValue}%'`
+
+                         //escape for last element
+                        if (!--counter) {
+                            continue
+                        }
+                        else {
+                            whereClause += ' and '
+                        }
+                    }
                 }
                 whereClause += ')'
                 //if tableName startsWith "collection_" then do query below otherwise do another query where instead of colletion_id we have definition_id - UPDATE this is not needed as the definitions will also contain the collection_id, adn we only send the collection id to the frontend.
-                // query = `select biobank_id as biobank_id, collection_id as collection_id, number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
-                query = `select biobank_id as biobank_id, collection_id as collection_id, SUM(number_of_rows) as number_of_rows from "${tableName}" ${whereClause} GROUP BY biobank_id, collection_id order by number_of_rows desc`
+                query = `select biobank_id as biobank_id, collection_id as collection_id, ${selectQueryLoincColumns} number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
+                // query = `select biobank_id as biobank_id, collection_id as collection_id, SUM(number_of_rows) as number_of_rows from "${tableName}" ${whereClause} GROUP BY biobank_id, collection_id order by number_of_rows desc`
                 console.log(query)
 
                     const res = await collectionDB.query(query)
@@ -275,6 +291,20 @@ class ContentDAO {
                     }
             }
             console.log(result)
+            let frontendLoincs = frontendQuery.map(function(row) { return {loincCode: row.loincCode.loincnum, fromValue: row.value.fromValue, toValue: row.value.toValue }})
+            // result = [frontendLoincs, ...result[0]]
+            for (let arr of result) {
+                console.log(arr)
+                // for (let frontendRow of frontendLoincs) {
+                for (let row of arr) {
+                    row['frontendQuery'] = frontendLoincs
+                        // Object.assign(row, frontendRow)
+                    }
+                // }
+            }
+            // result = result.map(row => [frontendLoincs, ...row])
+            console.log(result)
+
             return result
         } 
         catch(e) {

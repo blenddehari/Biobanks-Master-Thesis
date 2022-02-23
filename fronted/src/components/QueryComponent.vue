@@ -153,13 +153,19 @@
                 <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5"
                     class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
                     <template v-slot:item="{ item }">
-                        <tr>
+                        <tr style="text-align: center;">
                             <!-- <td>{{ item.definitionId }}</td> -->
                             <td>{{ item.collectionId }}</td>
                             <td>{{ item.biobankId }}</td>
+                            <td>   
+                                {{ item.numberOfRows }}
+                            </td>
                             <td>
-                                <v-chip :color="getColor(item.numberOfRows)" dark>
-                                    {{ item.numberOfRows }}
+                                {{Math.round(item.revisedNumberOfRows)}}
+                            </td>
+                            <td >
+                                 <v-chip :color="getColor(item.goodValuesInPercentage)" dark>
+                                    {{ item.goodValuesInPercentage }}%
                                 </v-chip>
                             </td>
                         </tr>
@@ -231,16 +237,33 @@ export default {
                   {
                       text: 'Collection ID',
                       value: "collectionId",
-                      
+                      align: 'center',
+                       width: '200',
                   },
                   {
-                      text: 'Biobank Name',
+                      text: 'Biobank name',
                       value: "biobankId",
-                     
+                      align: 'center',
+                       width: '200',
                   },
                   {
-                      text: 'Possible hits',
+                      text: 'Number of rows matched',
                       value: "possibleHits",
+                      align: 'center',
+                       width: '200',
+                  },
+                  {
+                      // this means the "Rows matched within the Number of rows returned"
+                      text: 'Revised number of rows',
+                      value: 'revisedRows',
+                      align: 'center',
+                       width: '200',
+                  },
+                  {
+                      text: 'Ratio of values matched',
+                      value: "probability",
+                      width: '200',
+                      align: 'center',
                      
                   },
               ],
@@ -417,7 +440,7 @@ export default {
               this.datasetsLoaded = false
           },
           getColor(hits) {
-              if (hits > 15) return 'green'
+              if (hits > 25) return 'green'
               else if (hits > 10) return 'orange'
               else return 'red'
           },

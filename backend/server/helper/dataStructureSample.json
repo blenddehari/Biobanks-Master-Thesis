@@ -3784,7 +3784,34 @@
           {
             "position": 3,
             "name": "test2",
-            "code": "65649-6"
+            "code": "65649-6",
+            "hierarchy": {
+              "value": "top",
+              "sort": "15",
+              "children": [
+                 {
+                    "value": "ab",
+                    "sort": "10",
+                    "children": [
+                       {
+                          "value": "a",
+                          "sort": "1",
+                          "children": []
+                       },
+                       {
+                          "value": "b",
+                          "sort": "2",
+                          "children": []
+                       }
+                    ]
+                 },
+                 {
+                    "value": "c",
+                    "sort": "20",
+                    "children": []
+                 }
+              ]
+           }
           }
         ],
         "data": [
