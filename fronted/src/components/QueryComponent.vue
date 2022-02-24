@@ -168,6 +168,16 @@
                                     {{ item.goodValuesInPercentage }}%
                                 </v-chip>
                             </td>
+
+                            <!-- MULTIPLE LOINC CODES SUPPORT -->
+                             <td style="display: inline-block; padding: 7px;" v-for="row in item.goodHitsForMultipleLoincsForRow" :key="row.revisedNumberOfRows">
+                                <v-chip dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
+                            </td>
+                            <td  v-for="row in item.goodHitsForMultipleLoincsForRow" :key="row.goodValuesInPercentage">
+                                 <v-chip :color="getColor(row.goodValuesInPercentage)" dark>
+                                     {{ row.code }}:  {{ row.goodValuesInPercentage }}%
+                                </v-chip>
+                            </td>
                         </tr>
                     </template>
                 </v-data-table>
@@ -263,6 +273,21 @@ export default {
                       text: 'Ratio of values matched',
                       value: "probability",
                       width: '200',
+                      align: 'center',
+                     
+                  },
+                  // Support for multiple LOINC codes
+                     {
+                      // this means the "Rows matched within the Number of rows returned"
+                      text: 'Revised number of rows per LOINC',
+                      value: 'revisedRows',
+                      align: 'center',
+                       width: '300',
+                  },
+                  {
+                      text: 'Ratio of values matched per LOINC',
+                      value: "probability",
+                      width: '300',
                       align: 'center',
                      
                   },

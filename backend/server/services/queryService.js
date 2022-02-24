@@ -10,14 +10,19 @@ class QueryService {
             const res = await contentDao.getData(data)
             let filteredResult = []
             if (res) {
+                // for each index/collection that matched our query (res is an array of matched collections/indexes)
+                let goodHits = []
                 for (let arr of res) {
                     console.log(arr)
                     // TODO: group by collection ID if u dont group by in the db query already
                     let percentages = []
                     // on this array we will push he matching percentages for multiple matching LOINC codes
-                    let goodHits = []
+                    // for each row on this collection/index that matched
                     for (let el of arr) {
+                        // for each loinc code searched from the frontend
                         for (let frontendRow of el.frontendQuery) {
+                            // we need this length to populate the filteredResults properly and dynamically based on the number of loinc code searched form the frontend -> as the first n objects in the goodHits array are for the 1st matched row, the 2nd n objects are for the 2nd matched row and so on...
+                            var loincsLengthFromFrontend = el.frontendQuery.length
                             // find biggest and smallest number from front end query loinc values and db row values for that loinc code
                             const maxNumber = Math.max(frontendRow.fromValue, frontendRow.toValue, el[`${frontendRow.loincCode}_from`], el[`${frontendRow.loincCode}_to`])
                             const minNumber = Math.min(frontendRow.fromValue, frontendRow.toValue, el[`${frontendRow.loincCode}_from`], el[`${frontendRow.loincCode}_to`])
@@ -58,7 +63,11 @@ class QueryService {
                             el['goodValuesInPercentage'] = goodValuesInPercentage
 
                             // for multiple LOINC codes we need to send the goodValuesInPercentage as an array of objects with the LOINC code as a key and the matching percentage for that LOINC code, for all matching LOINC codes
-                            // goodHits.push({el[`${frontendRow.loincCode}`]: goodValuesInPercentage})
+                            var loinc = frontendRow.loincCode
+                            // goodHits.push({[loinc]: goodValuesInPercentage, revisedRows: revisedNumberOfRows})
+                            goodHits.push({code: loinc, goodValuesInPercentage: goodValuesInPercentage, revisedNumberOfRows: revisedNumberOfRows})
+
+                            // el[loinc] = goodValuesInPercentage
                             // maybe try smth like this: options.unshift({"new": { }})
 
                             // el['goodValuesInPercentage'] = {
@@ -72,17 +81,32 @@ class QueryService {
                             definitionId: el.definition_id,
                             numberOfRows: el.number_of_rows,
                             revisedNumberOfRows: el.revisedNumberOfRows,
-                            goodValuesInPercentage: el.goodValuesInPercentage
-                            // goodValuesInPercentage: goodHits
+                            goodValuesInPercentage: el.goodValuesInPercentage,
+                            // revisedNumberOfRows: {revisedRows: el.revisedNumberOfRows},
+                            // goodValuesInPercentage: {[loinc]: el.goodValuesInPercentage},
+                            allGoodHitsForAllLoincs: goodHits,
+                            // what we are doing now is slicing only the first n elements of goodHits, where n is the length of loinc code rows search on the frontend. The problem is that this needs to be dynamic and we shouldnt always slice from the first element but we should slice it so that the first result row has the first n objects from goodHits, the 2nd result row has the 2nd n objects (3rd & 4th if n=2) and so on...
+                            // goodHitsForMultipleLoincsForRow: goodHits.slice(0, loincsLengthFromFrontend)
                         })
+              
                     }
                     // matching percentages for every loinc code from the frontend (exL two loincs from frontend both match rows in db with two loincs -> one good percentage for each loinc matched = two percentages for element. HOW TO HANDLE THIS?)
                     console.log(percentages)
+                    // goodHits says -> if we have two loincs searched from the frontend and they match collections that have both those loincs, you have an array where the first two objects are for the percentage/revised rows matched for the first loinc and the 2nd object is for the 2nd loinc matched for the same row, then you have object 3 and 4 which is the same for the 2nd row matched and so on... How to send and show this properly to the frontend?
+                    console.log(goodHits)
                     
 
                 }
+                // for each result row add the first n elements of the goodHits array, n being the length of the loincs searched on frontend
+                let counter = 0
+                for (let row of filteredResult) {
+                    row['goodHitsForMultipleLoincsForRow'] = goodHits.slice(counter, loincsLengthFromFrontend + counter )
+                    counter += loincsLengthFromFrontend
+                }
+                
                 //sort by number of rows desc
                 filteredResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
+
 
                 return filteredResult
             } 
