@@ -173,7 +173,7 @@
                              <td style="display: inline-block; padding: 7px;" v-for="row in item.goodHitsForMultipleLoincsForRow" :key="row.revisedNumberOfRows">
                                 <v-chip dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
                             </td>
-                            <td  v-for="row in item.goodHitsForMultipleLoincsForRow" :key="row.goodValuesInPercentage">
+                            <td style="display: inline-block; padding: 7px;" v-for="row in item.goodHitsForMultipleLoincsForRow" :key="row.goodValuesInPercentage">
                                  <v-chip :color="getColor(row.goodValuesInPercentage)" dark>
                                      {{ row.code }}:  {{ row.goodValuesInPercentage }}%
                                 </v-chip>
