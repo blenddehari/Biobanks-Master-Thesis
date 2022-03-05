@@ -131,6 +131,13 @@
         <v-btn elevation="2" raised class="fancyButton" @click="simulatePatrickSendingData()">
            Simulate Patrick sending data
         </v-btn>
+        
+        <v-btn elevation="2" raised class="fancyButton" @click="toggleThreshold">
+           Choose Threshold
+        </v-btn>
+
+       
+            
         <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="toggleQueryType()">
             <v-icon v-if="!rangeQuery" style="margin-right:0px; padding-right:5px; width: 160%;">mdi-toggle-switch-off</v-icon>
             <v-icon v-else style="margin-right:0px; padding-right:5px; width: 160%;">mdi-toggle-switch</v-icon>
@@ -143,6 +150,47 @@
         <!-- <v-switch v-model="rangeQuery" inset  :label="rangeQuery ? 'Point Query' : 'Range Query'"></v-switch> -->
         <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch>
     </div>
+
+     <v-card v-show="showThreshold" style="width: 600px; margin:auto; margin-top: 30px;"
+            elevation="2"
+        >
+            <div style="padding: 60px 50px 30px 50px">
+                <v-slider
+                    v-model="thresholdGoodValues"
+                    label="😄 Good values"
+                    thumb-label="always"
+                    max="100"
+                    min="0"
+                    persistent-hint
+                    hint="Values over this threshold would be considered very good results."
+                    color="green"
+                    track-color="green"
+                    thumb-color="green"
+                ></v-slider>
+                <br/>
+                <br/>
+                <v-slider
+                    v-model="thresholdOkayValues"
+                    label="🙂 Okay values"
+                    thumb-label="always"
+                    max="100"
+                    min="0"
+                    persistent-hint
+                    hint="Values over this threshold would be considered okay results. Values below this threshold would be considered bad results 🙁 (and will be shown with color red)."
+                    color="orange"
+                    track-color="orange"
+                    thumb-color="orange"
+                ></v-slider>
+                <br/><br/>
+                 <v-btn
+                    text
+                    color="teal accent-4"
+                    @click="toggleThreshold"
+                    >
+                    Close
+                </v-btn>
+            </div>
+        </v-card>
 
     <div style="margin: 2em; z-index:0">
         <v-row align="center" justify="center">
@@ -176,10 +224,10 @@
                             </td>
 
                             <!-- MULTIPLE LOINC CODES SUPPORT -->
-                             <td v-show="detailedView" >
+                             <td >
                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
                             </td>
-                            <td v-show="detailedView" >
+                            <td  >
                                  <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
                                      {{ row.code }}: {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
                                 </v-chip>
@@ -241,6 +289,9 @@ export default {
               datasetsLoaded: false,
               datasets: [],
 
+              showThreshold: false,
+              thresholdGoodValues: 50,
+              thresholdOkayValues: 25,
               detailedView: false,
 
             //   datasets2: [],
@@ -487,13 +538,16 @@ export default {
               this.datasetsLoaded = false
           },
           getColor(hits) {
-              if (hits > 50) return 'green'
-              else if (hits > 25) return 'orange'
+              if (hits >= this.thresholdGoodValues) return 'green'
+              else if (hits >= this.thresholdOkayValues) return 'orange'
               else return 'red'
           },
-          showDetails() {
-              this.detailedView = true
+          toggleThreshold() {
+              this.showThreshold = !this.showThreshold
           },
+        //   showDetails() {
+        //       this.detailedView = true
+        //   },
       },
       computed: {
           errorMessages() {
