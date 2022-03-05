@@ -155,6 +155,9 @@ class QueryService {
                             for (let goodHit of row.goodHits) {
                                 for (let resGoodHit of res.goodHits) {
                                     if (goodHit.code === resGoodHit.code) {
+                                        // Question: this sum of the revisedNumberOfRows (expected hits per LOINC) does not match the "Number of rows matched (numberOfRows). What does this number really show?"
+                                        // Answer (check with Patrick): this nr means: from the full number of rows matched (numberOfRows) LOINC 1 is expected to have x nr of hits and LOINC 2 is expected to have y number of hits. Meaning, LOINC 1 is in x rows of the number of rows matched, and LOINC 2 is in y rows from number of rows matched
+                                        // example: numberOfRows=3168; expected hits per LOINC: 1-8=1779; 39243-1=2629. This means that from those 3168 rows matched, 1779 match the LOINC 1-8 for the values you searched (and that is 56.17%) whereas 2629 rows from those 1368 rows match the values you searched for LOINC 39243-1.
                                         goodHit.revisedNumberOfRows += resGoodHit.revisedNumberOfRows
                                     }
                                 }
@@ -173,7 +176,7 @@ class QueryService {
                 }
 
                 //sort by number of rows desc
-                filteredResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
+                // filteredResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
 
                 // TODO: send overallResults now instead of filteredResults where we have the results grouped by collection id and biobank id instead of all rows, and then in frontend when u click the row u should get the percentages per LOINC (found in goodHits)
                 overallResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));

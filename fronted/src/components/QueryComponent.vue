@@ -133,7 +133,7 @@
         </v-btn>
         
         <v-btn elevation="2" raised class="fancyButton" @click="toggleThreshold">
-           Choose Threshold
+           <v-icon style="margin-right:0px">mdi-notification-clear-all</v-icon> Choose Thresholds
         </v-btn>
 
        
@@ -151,9 +151,16 @@
         <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch>
     </div>
 
-     <v-card v-show="showThreshold" style="width: 600px; margin:auto; margin-top: 30px;"
+<v-dialog v-model="showThreshold" max-width="600" transition="dialog-bottom-transition" >
+     <v-card v-show="showThreshold" style="width: 600px; margin:auto; "
             elevation="2"
         >
+            <v-toolbar
+                color="primary"
+                dark
+                flat
+                height="50px"
+              >Choose your desired thresholds below</v-toolbar>
             <div style="padding: 60px 50px 30px 50px">
                 <v-slider
                     v-model="thresholdGoodValues"
@@ -162,7 +169,7 @@
                     max="100"
                     min="0"
                     persistent-hint
-                    hint="Values over this threshold would be considered very good results."
+                    hint="Values over this threshold would be considered good results."
                     color="green"
                     track-color="green"
                     thumb-color="green"
@@ -176,7 +183,7 @@
                     max="100"
                     min="0"
                     persistent-hint
-                    hint="Values over this threshold would be considered okay results. Values below this threshold would be considered bad results 🙁 (and will be shown with color red)."
+                    hint="Values in between this threshold and the threshold above would be considered okay-ish results. Values below this threshold would be considered bad results 🙁 (and will be shown with color red)."
                     color="orange"
                     track-color="orange"
                     thumb-color="orange"
@@ -184,13 +191,14 @@
                 <br/><br/>
                  <v-btn
                     text
-                    color="teal accent-4"
+                    color="primary"
                     @click="toggleThreshold"
                     >
                     Close
                 </v-btn>
             </div>
         </v-card>
+</v-dialog>
 
     <div style="margin: 2em; z-index:0">
         <v-row align="center" justify="center">
