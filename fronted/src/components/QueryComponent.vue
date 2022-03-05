@@ -153,7 +153,7 @@
                 <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5"
                     class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
                     <template v-slot:item="{ item }">
-                        <tr style="text-align: center;">
+                        <tr  style="text-align: center;">
                             <!-- <td>{{ item.definitionId }}</td> -->
                             <td>{{ item.collectionId }}</td>
                             <td>{{ item.biobankId }}</td>
@@ -168,14 +168,20 @@
                                     {{ item.goodValuesInPercentage }}%
                                 </v-chip>
                             </td>  -->
+                            <td>
+                                {{ Math.round(item.overallExpectedRows) }}
+                            </td>
+                            <td>
+                               <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
+                            </td>
 
                             <!-- MULTIPLE LOINC CODES SUPPORT -->
-                             <td >
+                             <td v-show="detailedView" >
                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
                             </td>
-                            <td  >
-                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage)" dark>
-                                     {{ row.code }}: {{ row.goodValuesInPercentage }}%
+                            <td v-show="detailedView" >
+                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
+                                     {{ row.code }}: {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
                                 </v-chip>
                             </td>
                         </tr>
@@ -234,6 +240,9 @@ export default {
               currentLoincList: [],
               datasetsLoaded: false,
               datasets: [],
+
+              detailedView: false,
+
             //   datasets2: [],
               headers: [
                 //   {
@@ -260,7 +269,7 @@ export default {
                       text: 'Number of rows matched',
                       value: "possibleHits",
                       align: 'center',
-                       width: '300',
+                      width: '300',
                   },
                 //   {
                 //       // this means the "Rows matched within the Number of rows returned"
@@ -276,21 +285,33 @@ export default {
                 //       align: 'center',
                      
                 //   },
+                {
+                    text: 'Overall expected hits',
+                    value: 'overallExpectedRows',
+                    align: 'center',
+                    width: '300',
+                },
+                {
+                    text: 'Overall hit ratio',
+                    value: 'overallPercentage',
+                    align: 'center',
+                    width: '300',
+                },
                   // Support for multiple LOINC codes
-                     {
+                {
                       // this means the "Rows matched within the Number of rows returned"
-                      text: 'Revised number of rows per LOINC',
-                      value: 'revisedRows',
-                      align: 'center',
-                       width: '400',
-                  },
-                  {
-                      text: 'Ratio of values matched per LOINC',
-                      value: "probability",
-                      width: '400',
-                      align: 'center',
+                    text: 'Expected hits per LOINC',
+                    value: 'revisedRows',
+                    align: 'center',
+                    width: '400',
+                },
+                {
+                    text: 'Hit ratio per LOINC',
+                    value: "probability",
+                    width: '400',
+                    align: 'center',
                      
-                  },
+                },
                 
               ],
           }
@@ -469,6 +490,9 @@ export default {
               if (hits > 50) return 'green'
               else if (hits > 25) return 'orange'
               else return 'red'
+          },
+          showDetails() {
+              this.detailedView = true
           },
       },
       computed: {

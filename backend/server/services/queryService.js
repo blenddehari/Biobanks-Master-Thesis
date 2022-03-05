@@ -5,7 +5,6 @@ const chalk = require('chalk');
 
 class QueryService {
     async getData(data) {
-        // TODO: uncomment this when the DB is ready
         try {
             const res = await contentDao.getData(data)
             let filteredResult = []
@@ -14,7 +13,6 @@ class QueryService {
                 let goodHits = []
                 for (let arr of res) {
                     console.log(arr)
-                    // TODO: group by collection ID if u dont group by in the db query already
                     let percentages = []
                     // on this array we will push he matching percentages for multiple matching LOINC codes
                     // for each row on this collection/index that matched
@@ -37,7 +35,7 @@ class QueryService {
                             
                             // when we have a range from the frontend (searched loincs) that is bigger (includes) both "from" and "to" values from the DB, then we just return all of the rows (100%)
                             if (parseInt(frontendRow.fromValue) <= parseInt(el[`${frontendRow.loincCode}_from`]) && parseInt(frontendRow.toValue) >= parseInt(el[`${frontendRow.loincCode}_to`])) {
-                                goodHits.push({code: frontendRow.loincCode, goodValuesInPercentage: 100, revisedNumberOfRows: el.number_of_rows})
+                                goodHits.push({code: frontendRow.loincCode, goodValuesInPercentage: 1, revisedNumberOfRows: el.number_of_rows})
                                 continue
                             }
                             // find biggest and smallest number from front end query loinc values and db row values for that loinc code
@@ -69,9 +67,9 @@ class QueryService {
                             console.log(revisedNumberOfRows)
 
                             // find the percentage of matching values (good values) -> this means that the percentage of good values in the number of rows returned is that much
-                            let goodValuesInPercentage = revisedNumberOfRows / el.number_of_rows * 100
+                            let goodValuesInPercentage = revisedNumberOfRows / el.number_of_rows
                             // take only the first two values after the decimal point
-                            goodValuesInPercentage = parseFloat(goodValuesInPercentage).toFixed(2)
+                            goodValuesInPercentage = goodValuesInPercentage
 
                             console.log(goodValuesInPercentage)
                             percentages.push(goodValuesInPercentage)
@@ -126,11 +124,60 @@ class QueryService {
                 //     counter += loincsLengthFromFrontend
                 // }
 
+                // combine percentages
+                for (let res of filteredResult) {
+                    let overallPercentage = 1
+                    for (let hit of res.goodHits) {
+                        overallPercentage = overallPercentage * hit.goodValuesInPercentage
+                    }
+                    res['overallPercentage'] = overallPercentage
+                    res['overallExpectedRows'] = res.numberOfRows * overallPercentage
+                }
+
+                let overallResult = []
+                // group by collection ID and biobank ID
+                for (let res of filteredResult) {
+                    // if the combination of biobank and collection is already in overallResult we need to do smth, otherwise we do smth different
+                    // if it's an index, we need to take into account also the definition id
+                    // so it's a combination of biobank ID, collection ID and definition ID
+                    let found = false
+                    for (let row of overallResult) {
+                        // Group by biobankId, collectionId and definitionId
+                        if (res.biobankId === row.biobankId && res.collectionId === row.collectionId && res.definitionId === row.definitionId) {
+                            console.log(res, row)
+                            // SUM up numberOfRows
+                            row.numberOfRows += res.numberOfRows
+                            // SUM up the overallExpectedRows
+                            row.overallExpectedRows += res.overallExpectedRows
+                            // overall hits in percentage
+                            row.overallPercentage = row.overallExpectedRows / row.numberOfRows
+
+                            for (let goodHit of row.goodHits) {
+                                for (let resGoodHit of res.goodHits) {
+                                    if (goodHit.code === resGoodHit.code) {
+                                        goodHit.revisedNumberOfRows += resGoodHit.revisedNumberOfRows
+                                    }
+                                }
+                                goodHit.goodValuesInPercentage = goodHit.revisedNumberOfRows / row.numberOfRows
+                            }   
+                            // TODO: the goodHits in filteredResults gets overwritten with the goodHits in overallExpectedRows for some reason??? - but it does not matter since we are only sending the overallResult to the frontend now
+
+                            found = true
+                        }
+                        
+                    }
+                    if (!found) {
+                        // overallResult.push(Object.assign([], res))
+                        overallResult.push(res)
+                    }
+                }
+
                 //sort by number of rows desc
                 filteredResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
 
-
-                return filteredResult
+                // TODO: send overallResults now instead of filteredResults where we have the results grouped by collection id and biobank id instead of all rows, and then in frontend when u click the row u should get the percentages per LOINC (found in goodHits)
+                overallResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
+                return overallResult
             } 
             else throw 'There is no data containing that LOINC code!'
         }
