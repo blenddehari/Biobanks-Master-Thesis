@@ -179,7 +179,7 @@ class QueryService {
                 // filteredResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
 
                 // TODO: send overallResults now instead of filteredResults where we have the results grouped by collection id and biobank id instead of all rows, and then in frontend when u click the row u should get the percentages per LOINC (found in goodHits)
-                overallResult.sort((a, b) => parseFloat(b.numberOfRows) - parseFloat(a.numberOfRows));
+                overallResult.sort((a, b) => parseFloat(b.overallExpectedRows) - parseFloat(a.overallExpectedRows));
                 return overallResult
             } 
             else throw 'There is no data containing that LOINC code!'

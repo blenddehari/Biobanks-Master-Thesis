@@ -189,6 +189,10 @@
                     thumb-color="orange"
                 ></v-slider>
                 <br/><br/>
+
+                <v-text-field required v-model="thresholdExpectedHits" label="Expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
+                <br/><br/>
+                
                  <v-btn
                     text
                     color="primary"
@@ -206,7 +210,7 @@
                 <br />
                 <br />
                 <v-label v-if="datasetsLoaded">Ranked Results</v-label>
-                <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5"
+                <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5"  
                     class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
                     <template v-slot:item="{ item }">
                         <tr  style="text-align: center;">
@@ -225,10 +229,10 @@
                                 </v-chip>
                             </td>  -->
                             <td>
-                                {{ Math.round(item.overallExpectedRows) }}
+                               <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
                             </td>
                             <td>
-                               <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
+                                <v-chip style="margin:10px;" :color="getColorForExpectedHits(item.overallExpectedRows)" dark> {{ Math.round(item.overallExpectedRows) }} </v-chip>
                             </td>
 
                             <!-- MULTIPLE LOINC CODES SUPPORT -->
@@ -301,6 +305,7 @@ export default {
               thresholdGoodValues: 50,
               thresholdOkayValues: 25,
               detailedView: false,
+              thresholdExpectedHits: 0,
 
             //   datasets2: [],
               headers: [
@@ -345,14 +350,14 @@ export default {
                      
                 //   },
                 {
-                    text: 'Overall expected hits',
-                    value: 'overallExpectedRows',
+                    text: 'Overall hit ratio',
+                    value: 'overallPercentage',
                     align: 'center',
                     width: '300',
                 },
                 {
-                    text: 'Overall hit ratio',
-                    value: 'overallPercentage',
+                    text: 'Overall expected hits',
+                    value: 'overallExpectedRows',
                     align: 'center',
                     width: '300',
                 },
@@ -548,6 +553,10 @@ export default {
           getColor(hits) {
               if (hits >= this.thresholdGoodValues) return 'green'
               else if (hits >= this.thresholdOkayValues) return 'orange'
+              else return 'red'
+          },
+          getColorForExpectedHits(hits) {
+              if (hits >= this.thresholdExpectedHits) return 'green'
               else return 'red'
           },
           toggleThreshold() {
