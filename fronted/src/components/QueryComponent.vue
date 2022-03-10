@@ -816,7 +816,7 @@ export default {
     margin-top: 2em
 }
 .text {
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-family: "Arial";
     font-weight: normal ;
     letter-spacing: 0 ;
