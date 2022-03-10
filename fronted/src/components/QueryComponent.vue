@@ -278,13 +278,13 @@
             disable-sort
         >
         
-        <template #item.overallPercentage="{item}">
-            <td >
-                <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
+        <template #item.overallPercentage="{value}">
+            <td class="d-flex justify-center">
+                <v-chip style="margin:10px;" :color="getColor(value * 100)" dark> {{ parseFloat(value * 100).toFixed(2) }}% </v-chip>
             </td>
         </template>
             <template #item.overallExpectedRows="{item}">
-            <td >
+            <td class="d-flex justify-center" >
                 <v-chip style="margin:10px;" :color="getColorForExpectedHits(item.overallExpectedRows)" dark> {{ Math.round(item.overallExpectedRows) }} </v-chip>
             </td>
         </template>
@@ -510,31 +510,31 @@ export default {
                    {
                       text: 'Collection ID',
                       value: "collectionId",
-                      align: 'left',
+                      align: 'center',
                     //    width: '200',
                   },
                   {
                       text: 'Biobank name',
                       value: "biobankId",
-                      align: 'left',
+                      align: 'center',
                     //    width: '200',
                   },
                   {
                       text: 'Number of rows matched',
                       value: "numberOfRows",
-                      align: 'left',
+                      align: 'center',
                     //   width: '300',
                   },
                 {
                     text: 'Overall hit ratio',
                     value: 'overallPercentage',
-                    align: 'left',
+                    align: 'center',
                     // width: '300',
                 },
                 {
                     text: 'Overall expected hits',
                     value: 'overallExpectedRows',
-                    align: 'left',
+                    align: 'center',
                     // width: '300',
                 },
               ],
