@@ -209,9 +209,15 @@
             <v-col>
                 <br />
                 <br />
-                <v-label v-if="datasetsLoaded">Ranked Results</v-label>
-                <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5"  
+                <!-- <v-label v-if="datasetsLoaded">Ranked Results</v-label> -->
+                <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5" 
                     class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
+                     <template v-slot:top>
+                        <v-toolbar flat color="white">
+                        <v-toolbar-title>Ranked Results</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        </v-toolbar>
+                     </template>
                     <template v-slot:item="{ item }">
                         <tr  style="text-align: center;">
                             <!-- <td>{{ item.definitionId }}</td> -->
@@ -237,11 +243,20 @@
 
                             <!-- MULTIPLE LOINC CODES SUPPORT -->
                              <td >
-                                <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
+                                <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>
+                                    <v-chip class="ma-2" small
+                                        color="white"
+                                        outlined>{{ row.code }}: 
+                                    </v-chip>    
+                                    {{Math.round(row.revisedNumberOfRows)}}</v-chip>
                             </td>
                             <td  >
                                  <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
-                                     {{ row.code }}: {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
+                                     <v-chip class="ma-2" small
+                                        color="white"
+                                        outlined>{{ row.code }}: 
+                                    </v-chip>   
+                                    {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
                                 </v-chip>
                             </td>
                         </tr>
@@ -249,6 +264,88 @@
                 </v-data-table>
             </v-col>
         </v-row>
+
+        <!-- TEST NEW TABLE  -->
+        <v-data-table id="rankingTable"
+            :headers="headers2"
+            :items="temporaryFakeDatasets" 
+            :single-expand="true"
+            :expanded.sync="expanded"
+            item-key="biobankId"
+            show-expand
+            class="elevation-1"
+            style="margin-top:10px;" 
+            disable-sort
+        >
+        
+        <template #item.overallPercentage="{item}">
+            <td >
+                <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
+            </td>
+        </template>
+            <template #item.overallExpectedRows="{item}">
+            <td >
+                <v-chip style="margin:10px;" :color="getColorForExpectedHits(item.overallExpectedRows)" dark> {{ Math.round(item.overallExpectedRows) }} </v-chip>
+            </td>
+        </template>
+    
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>Ranked Results</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+      </template>
+      <template #expanded-item="{ headers, item }">
+        <td  :colspan="headers.length ">
+            <v-row >
+                <v-col cols="12" md="6">
+                   <h4 class="text" style="display:inline; ">Expected hits per LOINC: </h4>
+                   <v-chip  style="margin:10px;"  v-for="(row,index) in item.goodHits" :key="index" dark>
+                       <v-chip class="ma-2" small
+                            color="white"
+                            outlined>{{ row.code }}: 
+                        </v-chip>  
+                        {{Math.round(row.revisedNumberOfRows)}}</v-chip> 
+                </v-col>
+            </v-row>
+            <v-divider></v-divider>
+            <v-row >
+                <v-col cols="12" md="6">
+                    <h4 class="text" style="display:inline; margin-right:55px;">Hit ratio per LOINC: </h4>
+                    <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
+                       <v-chip class="ma-2" small 
+                            color="white"
+                            outlined>{{ row.code }}: 
+                        </v-chip> 
+                        {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
+                    </v-chip>                
+                </v-col>
+            </v-row>
+          <!-- <v-simple-table >
+                  <thead  >
+                    <tr>
+                      <th>Expected hits per LOINC</th>
+                      <th>Hit ratio per LOINC</th>
+                     
+                    </tr>
+                  </thead>
+                  <tbody>
+                             <td >
+                                <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
+                            </td>
+                            <td  >
+                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
+                                     {{ row.code }}: {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
+                                </v-chip>
+                            </td>
+
+                  </tbody>
+            </v-simple-table> -->
+        </td>
+      </template>
+    </v-data-table>
+
+
     </div>
 
     <v-footer ref="footer" :absolute="true" :padless="true" class="footer">
@@ -306,6 +403,37 @@ export default {
               thresholdOkayValues: 25,
               detailedView: false,
               thresholdExpectedHits: 0,
+              expanded: [],
+              temporaryFakeDatasets: [
+    {
+        "biobankId": "biobank_6",
+        "collectionId": "collection_6",
+        "numberOfRows": 46,
+        "goodHits": [
+            {
+                "code": "10156-8",
+                "goodValuesInPercentage": 0.0625,
+                "revisedNumberOfRows": 2.875
+            }
+        ],
+        "overallPercentage": 0.0625,
+        "overallExpectedRows": 2.875
+    },
+    {
+        "biobankId": "biobank_1",
+        "collectionId": "collection_1",
+        "numberOfRows": 15,
+        "goodHits": [
+            {
+                "code": "10156-8",
+                "goodValuesInPercentage": 0.1111111111111111,
+                "revisedNumberOfRows": 1.6666666666666665
+            }
+        ],
+        "overallPercentage": 0.1111111111111111,
+        "overallExpectedRows": 1.6666666666666665
+    }
+],
 
             //   datasets2: [],
               headers: [
@@ -331,7 +459,7 @@ export default {
                   },
                   {
                       text: 'Number of rows matched',
-                      value: "possibleHits",
+                      value: "numberOfRows",
                       align: 'center',
                       width: '300',
                   },
@@ -378,6 +506,39 @@ export default {
                 },
                 
               ],
+              headers2: [
+                   {
+                      text: 'Collection ID',
+                      value: "collectionId",
+                      align: 'left',
+                    //    width: '200',
+                  },
+                  {
+                      text: 'Biobank name',
+                      value: "biobankId",
+                      align: 'left',
+                    //    width: '200',
+                  },
+                  {
+                      text: 'Number of rows matched',
+                      value: "numberOfRows",
+                      align: 'left',
+                    //   width: '300',
+                  },
+                {
+                    text: 'Overall hit ratio',
+                    value: 'overallPercentage',
+                    align: 'left',
+                    // width: '300',
+                },
+                {
+                    text: 'Overall expected hits',
+                    value: 'overallExpectedRows',
+                    align: 'left',
+                    // width: '300',
+                },
+              ],
+
           }
       },
     //    validations: {
@@ -562,6 +723,17 @@ export default {
           toggleThreshold() {
               this.showThreshold = !this.showThreshold
           },
+        //   expandRow(event, item) {
+        //       console.log('item', item)
+        //       console.log('event', event)
+        //       console.log('event expanded', event.isExpanded)
+        //     if (event.isExpanded) {
+        //         const index = this.expanded.findIndex(i => i === item);
+        //         this.expanded.splice(index, 1)
+        //     } else {
+        //         this.expanded.push(item);
+        //     }
+        //   },
         //   showDetails() {
         //       this.detailedView = true
         //   },
@@ -642,6 +814,13 @@ export default {
 }
 .form {
     margin-top: 2em
+}
+.text {
+    font-size: 1.3em;
+    font-family: "Arial";
+    font-weight: normal ;
+    letter-spacing: 0 ;
+    text-transform: none ;
 }
 #rankingTable table thead tr th {
     background-color: rgba(182, 183, 187);
