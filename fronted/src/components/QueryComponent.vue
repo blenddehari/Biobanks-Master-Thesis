@@ -173,7 +173,11 @@
                     color="green"
                     track-color="green"
                     thumb-color="green"
-                ></v-slider>
+                >
+                    <template v-slot:thumb-label="{ value }">
+                        {{ value }}%
+                    </template>
+                </v-slider>
                 <br/>
                 <br/>
                 <v-slider
@@ -187,10 +191,14 @@
                     color="orange"
                     track-color="orange"
                     thumb-color="orange"
-                ></v-slider>
+                >
+                <template v-slot:thumb-label="{ value }">
+                    {{ value }}%
+                </template>
+                </v-slider>
                 <br/><br/>
 
-                <v-text-field required v-model="thresholdExpectedHits" label="Expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
+                <v-text-field required color="green" v-model="thresholdExpectedHits" label="Expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
                 <br/><br/>
                 
                  <v-btn
@@ -205,11 +213,12 @@
 </v-dialog>
 
     <div style="margin: 2em; z-index:0">
-        <v-row align="center" justify="center">
+
+        <!-- OLD TABLE -->
+        <!-- <v-row align="center" justify="center">
             <v-col>
                 <br />
                 <br />
-                <!-- <v-label v-if="datasetsLoaded">Ranked Results</v-label> -->
                 <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5" 
                     class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
                      <template v-slot:top>
@@ -220,20 +229,12 @@
                      </template>
                     <template v-slot:item="{ item }">
                         <tr  style="text-align: center;">
-                            <!-- <td>{{ item.definitionId }}</td> -->
                             <td>{{ item.collectionId }}</td>
                             <td>{{ item.biobankId }}</td>
                              <td>   
                                 {{ item.numberOfRows }}
                             </td>
-                            <!-- <td v-show="item.goodValuesInPercentage">
-                                {{Math.round(item.revisedNumberOfRows)}}
-                            </td>
-                            <td v-show="item.revisedNumberOfRows">
-                                 <v-chip :color="getColor(item.goodValuesInPercentage)" dark>
-                                    {{ item.goodValuesInPercentage }}%
-                                </v-chip>
-                            </td>  -->
+                           
                             <td>
                                <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
                             </td>
@@ -241,7 +242,6 @@
                                 <v-chip style="margin:10px;" :color="getColorForExpectedHits(item.overallExpectedRows)" dark> {{ Math.round(item.overallExpectedRows) }} </v-chip>
                             </td>
 
-                            <!-- MULTIPLE LOINC CODES SUPPORT -->
                              <td >
                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>
                                     <v-chip class="ma-2" small
@@ -263,13 +263,15 @@
                     </template>
                 </v-data-table>
             </v-col>
-        </v-row>
+        </v-row> -->
 
-        <!-- TEST NEW TABLE  -->
-        <v-data-table id="rankingTable"
+        <!-- NEW TABLE (EXPANDABLE)  -->
+        <v-data-table 
+            v-if="datasetsLoaded"
+            id="rankingTable"
             :headers="headers2"
-            :items="temporaryFakeDatasets" 
-            :single-expand="true"
+            :items="datasets" 
+            :single-expand="false"
             :expanded.sync="expanded"
             item-key="biobankId"
             show-expand
@@ -280,7 +282,7 @@
         
         <template #item.overallPercentage="{value}">
             <td class="d-flex justify-center">
-                <v-chip style="margin:10px;" :color="getColor(value * 100)" dark> {{ parseFloat(value * 100).toFixed(2) }}% </v-chip>
+                <v-chip style="margin:10px;" :color="getColor(value * 100)" dark>  {{ parseFloat(value * 100).toFixed(2) }}% </v-chip>
             </td>
         </template>
             <template #item.overallExpectedRows="{item}">
@@ -311,7 +313,7 @@
             <v-divider></v-divider>
             <v-row >
                 <v-col cols="12" md="6">
-                    <h4 class="text" style="display:inline; margin-right:55px;">Hit ratio per LOINC: </h4>
+                    <h4 class="text" style="display:inline; margin-right:50px;">Hit ratio per LOINC: </h4>
                     <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
                        <v-chip class="ma-2" small 
                             color="white"
