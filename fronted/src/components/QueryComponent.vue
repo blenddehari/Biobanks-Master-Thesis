@@ -162,7 +162,14 @@
                 height="50px"
               >Choose your desired thresholds below</v-toolbar>
             <div style="padding: 60px 50px 30px 50px">
-                <v-slider
+                <v-label>Overall expected hit ratio</v-label> <br/>
+                <v-btn style="margin: 10px 0px 40px 0px;" outlined @click="overallExpectedHitThreshold = !overallExpectedHitThreshold">  
+                    <v-icon left>
+                    mdi-pencil
+                    </v-icon>
+                    {{overallExpectedHitThreshold ? 'Hide thresholds' : 'Show thresholds'}} 
+                </v-btn>
+                <v-slider v-show="overallExpectedHitThreshold"
                     v-model="thresholdGoodValues"
                     label="😄 Good values"
                     thumb-label="always"
@@ -180,7 +187,7 @@
                 </v-slider>
                 <br/>
                 <br/>
-                <v-slider
+                <v-slider v-show="overallExpectedHitThreshold"
                     v-model="thresholdOkayValues"
                     label="🙂 Okay values"
                     thumb-label="always"
@@ -197,6 +204,50 @@
                 </template>
                 </v-slider>
                 <br/><br/>
+
+                 <v-label>Hit ratio per LOINC</v-label> <br/>
+                <v-btn style="margin: 10px 0px 40px 0px;" outlined @click="overallExpectedHitsPerLoincThreshold = !overallExpectedHitsPerLoincThreshold">  
+                    <v-icon left>
+                    mdi-pencil
+                    </v-icon>
+                    {{overallExpectedHitsPerLoincThreshold ? 'Hide thresholds' : 'Show thresholds'}} 
+                </v-btn>
+                <v-slider v-show="overallExpectedHitsPerLoincThreshold"
+                    v-model="thresholdGoodValuesPerLoinc"
+                    label="😄 Good values"
+                    thumb-label="always"
+                    max="100"
+                    min="0"
+                    persistent-hint
+                    hint="Values over this threshold would be considered good results."
+                    color="green"
+                    track-color="green"
+                    thumb-color="green"
+                >
+                    <template v-slot:thumb-label="{ value }">
+                        {{ value }}%
+                    </template>
+                </v-slider>
+                <br/>
+                <br/>
+                <v-slider v-show="overallExpectedHitsPerLoincThreshold"
+                    v-model="thresholdOkayValuesPerLoinc"
+                    label="🙂 Okay values"
+                    thumb-label="always"
+                    max="100"
+                    min="0"
+                    persistent-hint
+                    hint="Values in between this threshold and the threshold above would be considered okay-ish results. Values below this threshold would be considered bad results 🙁 (and will be shown with color red)."
+                    color="orange"
+                    track-color="orange"
+                    thumb-color="orange"
+                >
+                <template v-slot:thumb-label="{ value }">
+                    {{ value }}%
+                </template>
+                </v-slider>
+                <br/><br/>
+
 
                 <v-text-field required color="green" v-model="thresholdExpectedHits" label="Expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
                 <br/><br/>
@@ -314,7 +365,7 @@
             <v-row >
                 <v-col cols="12" md="6">
                     <h4 class="text" style="display:inline; margin-right:50px;">Hit ratio per LOINC: </h4>
-                    <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
+                    <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColorPerLoinc(row.goodValuesInPercentage * 100)" dark>
                        <v-chip class="ma-2" small 
                             color="white"
                             outlined>{{ row.code }}: 
@@ -403,9 +454,13 @@ export default {
               showThreshold: false,
               thresholdGoodValues: 50,
               thresholdOkayValues: 25,
+              thresholdGoodValuesPerLoinc: 50,
+              thresholdOkayValuesPerLoinc: 25,
               detailedView: false,
               thresholdExpectedHits: 0,
               expanded: [],
+              overallExpectedHitThreshold: false,
+              overallExpectedHitsPerLoincThreshold: false,
               temporaryFakeDatasets: [
     {
         "biobankId": "biobank_6",
@@ -720,6 +775,11 @@ export default {
           },
           getColorForExpectedHits(hits) {
               if (hits >= this.thresholdExpectedHits) return 'green'
+              else return 'red'
+          },
+          getColorPerLoinc(hits) {
+              if (hits >= this.thresholdGoodValuesPerLoinc) return 'green'
+              else if (hits >= this.thresholdOkayValuesPerLoinc) return 'orange'
               else return 'red'
           },
           toggleThreshold() {
