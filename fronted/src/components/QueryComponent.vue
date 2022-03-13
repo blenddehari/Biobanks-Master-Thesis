@@ -249,7 +249,7 @@
                 <br/><br/>
 
 
-                <v-text-field required color="green" v-model="thresholdExpectedHits" label="Expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
+                <v-text-field required color="green" v-model="thresholdExpectedHits" label="Overall expected hits" hint="Values over this threshold will be considered good results and will appear with the color green." persistent-hint type="number"></v-text-field>
                 <br/><br/>
                 
                  <v-btn
@@ -784,6 +784,8 @@ export default {
           },
           toggleThreshold() {
               this.showThreshold = !this.showThreshold
+              this.overallExpectedHitThreshold = false
+              this.overallExpectedHitsPerLoincThreshold = false
           },
         //   expandRow(event, item) {
         //       console.log('item', item)

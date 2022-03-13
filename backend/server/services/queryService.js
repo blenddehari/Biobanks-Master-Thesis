@@ -34,7 +34,7 @@ class QueryService {
                             // var loincsLengthFromFrontend = el.frontendQuery.length
                             
                             // when we have a range from the frontend (searched loincs) that is bigger (includes) both "from" and "to" values from the DB, then we just return all of the rows (100%)
-                            if (parseInt(frontendRow.fromValue) <= parseInt(el[`${frontendRow.loincCode}_from`]) && parseInt(frontendRow.toValue) >= parseInt(el[`${frontendRow.loincCode}_to`])) {
+                            if (parseFloat(frontendRow.fromValue) <= parseFloat(el[`${frontendRow.loincCode}_from`]) && parseFloat(frontendRow.toValue) >= parseFloat(el[`${frontendRow.loincCode}_to`])) {
                                 goodHits.push({code: frontendRow.loincCode, goodValuesInPercentage: 1, revisedNumberOfRows: el.number_of_rows})
                                 continue
                             }
@@ -150,6 +150,9 @@ class QueryService {
                             // SUM up the overallExpectedRows
                             row.overallExpectedRows += res.overallExpectedRows
                             // overall hits in percentage
+                            // TODO: is this all we should do with the overallPercentage or should we use the res['overallPercentage'] we calculate above (line 133) - multiplied with every matched row per LOINC
+                            // solved: we already use the res.overallPercentage when we multiply the full numberOfRows with this to get the overall expected rows!
+                            // row.overallPercentagePerLoinc = res.overallPercentage 
                             row.overallPercentage = row.overallExpectedRows / row.numberOfRows
 
                             for (let goodHit of row.goodHits) {
@@ -158,6 +161,7 @@ class QueryService {
                                         // Question: this sum of the revisedNumberOfRows (expected hits per LOINC) does not match the "Number of rows matched (numberOfRows). What does this number really show?"
                                         // Answer (check with Patrick): this nr means: from the full number of rows matched (numberOfRows) LOINC 1 is expected to have x nr of hits and LOINC 2 is expected to have y number of hits. Meaning, LOINC 1 is in x rows of the number of rows matched, and LOINC 2 is in y rows from number of rows matched
                                         // example: numberOfRows=3168; expected hits per LOINC: 1-8=1779; 39243-1=2629. This means that from those 3168 rows matched, 1779 match the LOINC 1-8 for the values you searched (and that is 56.17%) whereas 2629 rows from those 1368 rows match the values you searched for LOINC 39243-1.
+                                        // Keep in mind: goodHit.revisedNumberOfRows is just an expected number of rows per LOINC
                                         goodHit.revisedNumberOfRows += resGoodHit.revisedNumberOfRows
                                     }
                                 }
