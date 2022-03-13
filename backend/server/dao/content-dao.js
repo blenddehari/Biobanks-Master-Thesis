@@ -279,8 +279,12 @@ class ContentDAO {
                     }
                 }
                 whereClause += ')'
-                //if tableName startsWith "collection_" then do query below otherwise do another query where instead of colletion_id we have definition_id - UPDATE this is not needed as the definitions will also contain the collection_id, adn we only send the collection id to the frontend.
-                query = `select biobank_id as biobank_id, collection_id as collection_id, ${selectQueryLoincColumns} number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
+                //if tableName startsWith "collection_" then do query below otherwise do another query where instead of collection_id we have definition_id - UPDATE this is not needed as the definitions will also contain the collection_id, adn we only send the collection id to the frontend.
+                if (tableName.startsWith('collection')) {
+                    query = `select biobank_id as biobank_id, collection_id as collection_id, ${selectQueryLoincColumns} number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
+                } else if (tableName.startsWith('definition')) {
+                    query = `select definition_id as definition_id, biobank_id as biobank_id, collection_id as collection_id, ${selectQueryLoincColumns} number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
+                }
                 // query = `select biobank_id as biobank_id, collection_id as collection_id, SUM(number_of_rows) as number_of_rows from "${tableName}" ${whereClause} GROUP BY biobank_id, collection_id order by number_of_rows desc`
                 console.log(query)
 

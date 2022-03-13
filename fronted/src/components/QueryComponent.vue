@@ -374,6 +374,15 @@
                     </v-chip>                
                 </v-col>
             </v-row>
+            <v-divider style="margin-bottom: 10px;"></v-divider>
+            <v-row>
+                 <v-col cols="12" md="6" style="margin-bottom:10px;">
+                    <!-- <p style="display:inline; font-size: 0.9em;">Full collection? </p> -->
+                    <h4 class="text" style="display:inline; ">Full collection? </h4>
+                        <v-icon color="green" v-show="item.definitionId">mdi-checkbox-marked-circle</v-icon> 
+                        <v-icon color="red" v-show="!item.definitionId">mdi-close-circle</v-icon>          
+                </v-col>
+            </v-row>
           <!-- <v-simple-table >
                   <thead  >
                     <tr>
