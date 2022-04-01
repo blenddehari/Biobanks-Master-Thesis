@@ -147,7 +147,7 @@ class QueryService {
                             console.log(res, row)
                             // SUM up numberOfRows
                             row.numberOfRows += res.numberOfRows
-                            // SUM up the overallExpectedRows
+                            // SUM up the overallExpectedRows // transfer the overall expected rows from filteredResult to overallResult
                             row.overallExpectedRows += res.overallExpectedRows
                             // overall hits in percentage
                             // TODO: is this all we should do with the overallPercentage or should we use the res['overallPercentage'] we calculate above (line 133) - multiplied with every matched row per LOINC

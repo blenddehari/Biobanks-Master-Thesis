@@ -133,7 +133,7 @@
         </v-btn>
         
         <v-btn elevation="2" raised class="fancyButton" @click="toggleThreshold">
-           <v-icon style="margin-right:0px">mdi-notification-clear-all</v-icon> Choose Thresholds
+           <v-icon style="margin-right:0px">mdi-tune</v-icon> Choose Thresholds
         </v-btn>
 
        
@@ -163,7 +163,7 @@
               >Choose your desired thresholds below</v-toolbar>
             <div style="padding: 60px 50px 30px 50px">
                 <v-label>Overall expected hit ratio</v-label> <br/>
-                <v-btn style="margin: 10px 0px 40px 0px;" outlined @click="overallExpectedHitThreshold = !overallExpectedHitThreshold">  
+                <v-btn style="margin: 10px 0px 40px 0px;" rounded outlined @click="overallExpectedHitThreshold = !overallExpectedHitThreshold">  
                     <v-icon left>
                     mdi-pencil
                     </v-icon>
@@ -206,7 +206,7 @@
                 <br/><br/>
 
                  <v-label>Hit ratio per LOINC</v-label> <br/>
-                <v-btn style="margin: 10px 0px 40px 0px;" outlined @click="overallExpectedHitsPerLoincThreshold = !overallExpectedHitsPerLoincThreshold">  
+                <v-btn style="margin: 10px 0px 40px 0px;" rounded outlined @click="overallExpectedHitsPerLoincThreshold = !overallExpectedHitsPerLoincThreshold">  
                     <v-icon left>
                     mdi-pencil
                     </v-icon>

@@ -47,7 +47,7 @@ class HelperFunctions {
         let definitionExample2 = dataSample.anonymizations[2]
         console.log(fullCollection)
 
-        let res = this.parseData(definitionExample1)
+        let res = this.parseData(fullCollection)
 
         return res
     };
