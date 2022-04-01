@@ -35,21 +35,58 @@ class ContentDAO {
             let tableName = 'collection_' + data.collection_id
             let columns = ''
             for (let el of data.columns) {
-                columns += `"${el.codeFrom}"` + ' ' + 'varchar(20)' + ',' 
-                columns += `"${el.codeTo}"` + ' ' + 'varchar(20)' + ',' 
+                columns += `"${el.codeFrom}"` + ' ' + 'varchar(99)' + ',' 
+                columns += `"${el.codeTo}"` + ' ' + 'varchar(99)' + ',' 
             }
             //eliminate trailing comma
             columns = columns.slice(0, -1)
             console.log(columns)
+            let query
 
             // IMPORTANT: the code to DROP the table is used only for testing purposes so that postgres does not throw when we try to create the same table, in the future this can be removed and we can directly create the table!
-            let query = `DROP TABLE "${tableName}"`
-            console.log(query)
-            const dropTable = await collectionDB.query(query)
+            // let query = `DROP TABLE "${tableName}"`
+            // console.log(query)
+            // const dropTable = await collectionDB.query(query)
 
-            query = `CREATE TABLE "${tableName}" (id serial NOT NULL PRIMARY KEY, collection_id varchar(20), biobank_id varchar(20), ${columns}, number_of_rows integer)`
+            query = `CREATE TABLE "${tableName}" (id serial NOT NULL PRIMARY KEY, collection_id varchar(99), biobank_id varchar(99), ${columns}, number_of_rows integer)`
             console.log(query)
             const createdTable = await collectionDB.query(query)
+
+            // SPEED UP TABLE PROCESS
+            let addColumns = ''
+            query = `INSERT INTO speed_up_tables `
+            let insertColumns = `"table_name",`
+            let insertValues = `'${tableName}',`
+
+            for (let column of data.columns) {
+                let query = `SELECT column_name
+                FROM information_schema.columns
+                WHERE table_name='speed_up_tables' and column_name='${column.code}';`
+                const res = await collectionDB.query(query)
+                
+                if (res.rows.length === 0) {
+                    let speedUpQuery = `ALTER TABLE speed_up_tables ADD "${column.code}" varchar(99) `
+                    await collectionDB.query(speedUpQuery)
+                }
+
+                // insert into speed_up_tables table
+                insertColumns += `"${column.code}",`
+                insertValues += `'true',`
+            }
+
+            //eliminate trailing comma
+            insertColumns = insertColumns.slice(0, -1)
+            insertValues = insertValues.slice(0, -1)
+
+            // continue building the query
+            query += `(${insertColumns})`
+            query += ` values `
+            query += `(${insertValues})`
+            let speedQuery = await collectionDB.query(query)
+            console.log(speedQuery)
+
+            // add every column to our speed_up_table as a column -> ALTER speed_up_table
+            // we would then write one row in this speed_up_table for table_name
 
             let columnsToInsert = ''
             for (let el of data.columns) {
@@ -146,8 +183,8 @@ class ContentDAO {
             else {
                 let columns = ''
                 for (let el of data.columns) {
-                    columns += `"${el.codeFrom}"` + ' ' + 'varchar(20)' + ',' 
-                    columns += `"${el.codeTo}"` + ' ' + 'varchar(20)' + ',' 
+                    columns += `"${el.codeFrom}"` + ' ' + 'varchar(99)' + ',' 
+                    columns += `"${el.codeTo}"` + ' ' + 'varchar(99)' + ',' 
                 }
                 //eliminate trailing comma
                 columns = columns.slice(0, -1)
@@ -158,9 +195,43 @@ class ContentDAO {
                 // console.log(query)
                 // const dropTable = await collectionDB.query(query)
 
-                query = `CREATE TABLE "${tableName}" (id serial NOT NULL PRIMARY KEY, collection_id varchar(20), definition_id varchar(20), biobank_id varchar(20), ${columns}, number_of_rows integer)`
+                query = `CREATE TABLE "${tableName}" (id serial NOT NULL PRIMARY KEY, collection_id varchar(99), definition_id varchar(99), biobank_id varchar(99), ${columns}, number_of_rows integer)`
                 console.log(query)
                 const createdTable = await collectionDB.query(query)
+
+                 // SPEED UP TABLE PROCESS
+                let addColumns = ''
+                query = `INSERT INTO speed_up_tables `
+                let insertColumns = `"table_name",`
+                let insertValues = `'${tableName}',`
+
+                for (let column of data.columns) {
+                    let query = `SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name='speed_up_tables' and column_name='${column.code}';`
+                    const res = await collectionDB.query(query)
+                    
+                    if (res.rows.length === 0) {
+                        let speedUpQuery = `ALTER TABLE speed_up_tables ADD "${column.code}" varchar(99) `
+                        await collectionDB.query(speedUpQuery)
+                    }
+
+                    // insert into speed_up_tables table
+                    insertColumns += `"${column.code}",`
+                    insertValues += `'true',`
+                }
+
+                //eliminate trailing comma
+                insertColumns = insertColumns.slice(0, -1)
+                insertValues = insertValues.slice(0, -1)
+
+                // continue building the query
+                query += `(${insertColumns})`
+                query += ` values `
+                query += `(${insertValues})`
+                let speedQuery = await collectionDB.query(query)
+                console.log(speedQuery)
+
 
                 let columnsToInsert = ''
                 for (let el of data.columns) {
@@ -210,35 +281,58 @@ class ContentDAO {
             let tableNames = []
             let columns
 
-            let query = `select t.table_name, array_agg(c.column_name::text) as columns
-                                from information_schema.tables t
-                                inner join information_schema.columns c on t.table_name = c.table_name
-                                where
-                                t.table_schema = 'public'
-                                and t.table_type= 'BASE TABLE'
-                                and c.table_schema = 'public'
-                                group by t.table_name;`
-                const tablesAndColumns = await collectionDB.query(query)
-                if (tablesAndColumns.rows) {
-                    for (let table of tablesAndColumns.rows) {
-                        let matches = true
-                        for (let el of frontendQuery) {
-                            if (!(table.columns.includes(`${el.loincCode.loincnum}_from`) && table.columns.includes(`${el.loincCode.loincnum}_to`))) {
-                                matches = false
-                                break
-                            }
-                        }
-                        if (matches) {
-                            tableNames.push(table.table_name)
-                        }
+            // OLD VERSION : CHECK ALL TABLES
+            // let query = `select t.table_name, array_agg(c.column_name::text) as columns
+            //                     from information_schema.tables t
+            //                     inner join information_schema.columns c on t.table_name = c.table_name
+            //                     where
+            //                     t.table_schema = 'public'
+            //                     and t.table_type= 'BASE TABLE'
+            //                     and c.table_schema = 'public'
+            //                     group by t.table_name;`
+            //     const tablesAndColumns = await collectionDB.query(query)
+
+
+            //     if (tablesAndColumns.rows) {
+            //         for (let table of tablesAndColumns.rows) {
+            //             let matches = true
+            //             for (let el of frontendQuery) {
+            //                 if (!(table.columns.includes(`${el.loincCode.loincnum}_from`) && table.columns.includes(`${el.loincCode.loincnum}_to`))) {
+            //                     matches = false
+            //                     break
+            //                 }
+            //             }
+            //             if (matches) {
+            //                 tableNames.push(table.table_name)
+            //             }
+            //         }
+            //     }
+
+                // NEW VERSION: ONLY QUERY THE SPEED_UP_TABLE
+                let query = `SELECT table_name from speed_up_tables WHERE `
+                let queryLoincs = ''
+                let counter = frontendQuery.length
+
+                for (let data of frontendQuery) {
+                    query += `"${data.loincCode.loincnum}" IS NOT NULL`
+
+                    if (!--counter) {
+                        continue
                     }
+                    else {
+                        query += ' AND '
+                    }
+                }
+                const speedUpResult = await collectionDB.query(query)
+                for(let res of speedUpResult.rows) {
+                    tableNames.push(res.table_name)
                 }
 
             for (let tableName of tableNames) {
 
                 let whereClause = 'where ('
                 let selectQueryLoincColumns = ''
-                let counter = frontendQuery.length
+                counter = frontendQuery.length
                 for (let el of frontendQuery) {
                     let searchByNumber = !isNaN(el.value.fromValue) && !isNaN(el.value.toValue)
                     selectQueryLoincColumns += ` "${el.loincCode.loincnum}_from", "${el.loincCode.loincnum}_to", `
