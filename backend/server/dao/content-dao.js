@@ -53,7 +53,7 @@ class ContentDAO {
             const createdTable = await collectionDB.query(query)
 
             // SPEED UP TABLE PROCESS
-            let addColumns = ''
+            // let addColumns = ''
             query = `INSERT INTO speed_up_tables `
             let insertColumns = `"table_name",`
             let insertValues = `'${tableName}',`
@@ -324,7 +324,7 @@ class ContentDAO {
                     }
                 }
                 const speedUpResult = await collectionDB.query(query)
-                for(let res of speedUpResult.rows) {
+                for (let res of speedUpResult.rows) {
                     tableNames.push(res.table_name)
                 }
 

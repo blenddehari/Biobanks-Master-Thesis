@@ -324,13 +324,20 @@
             :items="datasets" 
             :single-expand="false"
             :expanded.sync="expanded"
-            item-key="biobankId"
+            item-key="collectionId"
             show-expand
             class="elevation-1"
             style="margin-top:10px;" 
             disable-sort
         >
         
+        <template v-slot:top>
+            <v-toolbar flat color="white">
+            <v-toolbar-title>Ranked Results</v-toolbar-title>
+            <v-spacer></v-spacer>
+            </v-toolbar>
+        </template>
+
         <template #item.overallPercentage="{value}">
             <td class="d-flex justify-center">
                 <v-chip style="margin:10px;" :color="getColor(value * 100)" dark>  {{ parseFloat(value * 100).toFixed(2) }}% </v-chip>
@@ -342,12 +349,6 @@
             </td>
         </template>
     
-      <template v-slot:top>
-        <v-toolbar flat color="white">
-          <v-toolbar-title>Ranked Results</v-toolbar-title>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-      </template>
       <template #expanded-item="{ headers, item }">
         <td  :colspan="headers.length ">
             <v-row >
@@ -379,8 +380,8 @@
                  <v-col cols="12" md="6" style="margin-bottom:10px;">
                     <!-- <p style="display:inline; font-size: 0.9em;">Full collection? </p> -->
                     <h4 class="text" style="display:inline; ">Full collection? </h4>
-                        <v-icon color="green" v-show="item.definitionId">mdi-checkbox-marked-circle</v-icon> 
-                        <v-icon color="red" v-show="!item.definitionId">mdi-close-circle</v-icon>          
+                        <v-icon color="green" v-show="!item.definitionId">mdi-checkbox-marked-circle</v-icon> 
+                        <v-icon color="red" v-show="item.definitionId">mdi-close-circle</v-icon>          
                 </v-col>
             </v-row>
           <!-- <v-simple-table >
