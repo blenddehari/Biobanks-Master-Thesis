@@ -88,6 +88,20 @@ class ContentDAO {
             // add every column to our speed_up_table as a column -> ALTER speed_up_table
             // we would then write one row in this speed_up_table for table_name
 
+            // test speed_up_tables_2
+            query = `INSERT INTO speed_up_tables_2 ("table_name", "LOINCs") values `
+            let addColumns = `"table_name", "LOINCs"`
+            let addValues = `'${tableName}', ARRAY [`
+            for (let column of data.columns) {
+                addValues += `'${column.code}',`
+            }
+            addValues = addValues.slice(0, -1)
+            addValues += `]`
+            query += `(${addValues})`
+            await collectionDB.query(query)
+
+            // end test speed_up_tables_2
+
             let columnsToInsert = ''
             for (let el of data.columns) {
                 columnsToInsert += `"${el.codeFrom}",` 
@@ -200,7 +214,7 @@ class ContentDAO {
                 const createdTable = await collectionDB.query(query)
 
                  // SPEED UP TABLE PROCESS
-                let addColumns = ''
+                // let addColumns = ''
                 query = `INSERT INTO speed_up_tables `
                 let insertColumns = `"table_name",`
                 let insertValues = `'${tableName}',`
@@ -231,6 +245,21 @@ class ContentDAO {
                 query += `(${insertValues})`
                 let speedQuery = await collectionDB.query(query)
                 console.log(speedQuery)
+
+
+                // test speed_up_tables_2
+            query = `INSERT INTO speed_up_tables_2 ("table_name", "LOINCs") values `
+            let addColumns = `"table_name", "LOINCs"`
+            let addValues = `'${tableName}', ARRAY [`
+            for (let column of data.columns) {
+                addValues += `'${column.code}',`
+            }
+            addValues = addValues.slice(0, -1)
+            addValues += `]`
+            query += `(${addValues})`
+            await collectionDB.query(query)
+
+            // end test speed_up_tables_2
 
 
                 let columnsToInsert = ''
@@ -308,25 +337,46 @@ class ContentDAO {
             //         }
             //     }
 
-                // NEW VERSION: ONLY QUERY THE SPEED_UP_TABLE
-                let query = `SELECT table_name from speed_up_tables WHERE `
-                let queryLoincs = ''
-                let counter = frontendQuery.length
+            // NEW VERSION: ONLY QUERY THE SPEED_UP_TABLE
+            // let query = `SELECT table_name from speed_up_tables WHERE `
+            // let queryLoincs = ''
+            // let counter = frontendQuery.length
 
-                for (let data of frontendQuery) {
-                    query += `"${data.loincCode.loincnum}" IS NOT NULL`
+            // for (let data of frontendQuery) {
+            //     query += `"${data.loincCode.loincnum}" IS NOT NULL`
 
-                    if (!--counter) {
-                        continue
-                    }
-                    else {
-                        query += ' AND '
-                    }
+            //     if (!--counter) {
+            //         continue
+            //     }
+            //     else {
+            //         query += ' AND '
+            //     }
+            // }
+            // const speedUpResult = await collectionDB.query(query)
+            // for (let res of speedUpResult.rows) {
+            //     tableNames.push(res.table_name)
+            // }
+            // END NEW VERSION
+
+            // NEWEST VERSION: query the speed_up_tables_2
+            let query = `SELECT table_name from speed_up_tables_2 WHERE `
+            let counter = frontendQuery.length
+            for (let data of frontendQuery) {
+                query += `'${data.loincCode.loincnum}'= ANY("LOINCs")`
+
+                if (!--counter) {
+                    continue
                 }
-                const speedUpResult = await collectionDB.query(query)
-                for (let res of speedUpResult.rows) {
-                    tableNames.push(res.table_name)
+                else {
+                    query += ' AND '
                 }
+            }
+            const speedUpResult = await collectionDB.query(query)
+            for (let res of speedUpResult.rows) {
+                tableNames.push(res.table_name)
+            }
+                
+            // END NEWEST VERSION
 
             for (let tableName of tableNames) {
 
