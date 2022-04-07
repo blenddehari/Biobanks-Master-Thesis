@@ -90,7 +90,7 @@ class ContentDAO {
 
             // test speed_up_tables_2
             query = `INSERT INTO speed_up_tables_2 ("table_name", "LOINCs") values `
-            let addColumns = `"table_name", "LOINCs"`
+            // let addColumns = `"table_name", "LOINCs"`
             let addValues = `'${tableName}', ARRAY [`
             for (let column of data.columns) {
                 addValues += `'${column.code}',`
@@ -99,7 +99,6 @@ class ContentDAO {
             addValues += `]`
             query += `(${addValues})`
             await collectionDB.query(query)
-
             // end test speed_up_tables_2
 
             let columnsToInsert = ''
@@ -127,6 +126,36 @@ class ContentDAO {
                  console.log(query)
                  insertQuery = await collectionDB.query(query)
             }
+
+              // SPEED_UP_TABLES_4 PROCESS
+              let minValue
+              let maxValue
+              let minQuery = ''
+              let maxQuery = ''
+              for (let column of data.columns) {
+                  minQuery = `SELECT MIN("${column.code}_from") from "${tableName}"`
+                  maxQuery = `SELECT MAX("${column.code}_to") from "${tableName}"`
+                  minValue = await collectionDB.query(minQuery)
+                  maxValue = await collectionDB.query(maxQuery)
+                  minValue = parseFloat(minValue.rows[0].min)
+                  maxValue = parseFloat(maxValue.rows[0].max)
+
+                  let speedUp4Query = `SELECT * from speed_up_tables_4 where "table_name" = '${tableName}' AND "LOINC" = '${column.code}'`
+                  speedUp4Query = await collectionDB.query(speedUp4Query)
+  
+                  if (speedUp4Query.rows.length === 0) {
+                  speedUp4Query = `INSERT INTO speed_up_tables_4 ("table_name", "LOINC", "Min", "Max") values ('${tableName}', '${column.code}', ${minValue}, ${maxValue})`
+                  let runQuery = await collectionDB.query(speedUp4Query)
+                  console.log(runQuery)
+                  } else {
+                  console.log(speedUp4Query.rows[0])
+                  speedUp4Query = `UPDATE Min=${minValue}, Max=${maxValue} WHERE table_name=${tableName} and LOINC=${column.code}`
+                  runQuery = await collectionDB.query(speedUp4Query)
+                  console.log(runQuery)
+
+                  }
+              }
+              // END SPEED_UP_TABLES_4 PROCESS
 
             if (insertQuery.rowCount) {
                 return {status: 'Collection_OK'}
@@ -187,6 +216,37 @@ class ContentDAO {
                     insertQuery = await collectionDB.query(query)
 
                 }
+
+                 // SPEED_UP_TABLES_4 PROCESS
+                let minValue
+                let maxValue
+                let minQuery = ''
+                let maxQuery = ''
+                for (let column of data.columns) {
+                    minQuery = `SELECT MIN("${column.code}_from") from "${tableName}"`
+                    maxQuery = `SELECT MAX("${column.code}_to") from "${tableName}"`
+                    minValue = await collectionDB.query(minQuery)
+                    maxValue = await collectionDB.query(maxQuery)
+                    minValue = parseFloat(minValue.rows[0].min)
+                    maxValue = parseFloat(maxValue.rows[0].max)
+
+                    let speedUp4Query = `SELECT * from speed_up_tables_4 where "table_name" = '${tableName}' AND "LOINC" = '${column.code}'`
+                    speedUp4Query = await collectionDB.query(speedUp4Query)
+    
+                    if (speedUp4Query.rows.length === 0) {
+                    speedUp4Query = `INSERT INTO speed_up_tables_4 ("table_name", "LOINC", "Min", "Max") values ('${tableName}', '${column.code}', ${minValue}, ${maxValue})`
+                    let runQuery = await collectionDB.query(speedUp4Query)
+                    console.log(runQuery)
+                    } else {
+                    console.log(speedUp4Query.rows[0])
+                    speedUp4Query = `UPDATE Min=${minValue}, Max=${maxValue} WHERE table_name=${tableName} and LOINC=${column.code}`
+                    runQuery = await collectionDB.query(speedUp4Query)
+                    console.log(runQuery)
+
+                    }
+                }
+                // END SPEED_UP_TABLES_4 PROCESS
+
                 if (insertQuery.rowCount) {
                     return {status: 'Definition_existing_OK'}
                 }
@@ -262,6 +322,7 @@ class ContentDAO {
             // end test speed_up_tables_2
 
 
+
                 let columnsToInsert = ''
                 for (let el of data.columns) {
                     columnsToInsert += `"${el.codeFrom}",` 
@@ -288,6 +349,37 @@ class ContentDAO {
                     insertQuery = await collectionDB.query(query)
 
                 }
+
+                // SPEED_UP_TABLES_4 PROCESS
+                let minValue
+                let maxValue
+                let minQuery = ''
+                let maxQuery = ''
+                for (let column of data.columns) {
+                    minQuery = `SELECT MIN("${column.code}_from") from ${tableName}`
+                    maxQuery = `SELECT MAX("${column.code}_to") from ${tableName}`
+
+                    minValue = await collectionDB.query(minQuery)
+                    maxValue = await collectionDB.query(maxQuery)
+                
+                    let speedUp4Query = `SELECT * where table_name = ${tableName} AND LOINC = '${column.code}'`
+                    speedUp4Query = await collectionDB.query(speedUp4Query)
+    
+                    if (speedUp4Query.rows.length === 0) {
+                    speedUp4Query = `INSERT INTO speed_up_tables_4 (table_name, LOINC, Min, Max) values (${tableName}, ${column.code}, ${minValue}, ${maxValue})`
+                    let runQuery = await collectionDB.query(speedUp4Query)
+                    console.log(runQuery)
+                    } else {
+                    console.log(speedUp4Query.rows[0])
+                    speedUp4Query = `UPDATE Min=${minValue}, Max=${maxValue} WHERE table_name=${tableName} and LOINC=${column.code}`
+                    runQuery = await collectionDB.query(speedUp4Query)
+                    console.log(runQuery)
+
+                    }
+                }
+                // END SPEED_UP_TABLES_4 PROCESS
+       
+
                 if (insertQuery.rowCount) {
                     return {status: 'Definition_new_OK'}
                 }
@@ -337,7 +429,7 @@ class ContentDAO {
             //         }
             //     }
 
-            // NEW VERSION: ONLY QUERY THE SPEED_UP_TABLE
+            // ONLY QUERY THE SPEED_UP_TABLE
             // let query = `SELECT table_name from speed_up_tables WHERE `
             // let queryLoincs = ''
             // let counter = frontendQuery.length
@@ -356,27 +448,59 @@ class ContentDAO {
             // for (let res of speedUpResult.rows) {
             //     tableNames.push(res.table_name)
             // }
-            // END NEW VERSION
+            // END SPEED_UP_TABLE
 
-            // NEWEST VERSION: query the speed_up_tables_2
-            let query = `SELECT table_name from speed_up_tables_2 WHERE `
+            //  query the speed_up_tables_2
+            // let query = `SELECT table_name from speed_up_tables_2 WHERE `
+            // let counter = frontendQuery.length
+            // for (let data of frontendQuery) {
+            //     query += `'${data.loincCode.loincnum}'= ANY("LOINCs")`
+
+            //     if (!--counter) {
+            //         continue
+            //     }
+            //     else {
+            //         query += ' AND '
+            //     }
+            // }
+            // const speedUpResult = await collectionDB.query(query)
+            // for (let res of speedUpResult.rows) {
+            //     tableNames.push(res.table_name)
+            // } 
+            // END speed_up_tables_2
+
+
+            // QUERY SPEED_UP_TABLES_4
+
+            // QUERY: SELECT COUNT(*) as count_tables, "table_name" from speed_up_tables_4 where ("LOINC" = '1-8' AND ((50 BETWEEN "Min" and "Max") OR (100 BETWEEN "Min" and "Max") 
+            // OR ("Min" BETWEEN 50 and 100) OR ("Max" BETWEEN 50 AND 100))) OR ("LOINC" = '39243-1' AND ((10 BETWEEN "Min" and "Max") OR (20 BETWEEN "Min" and "Max") OR ("Min" BETWEEN 10 and 20) OR ("Max" BETWEEN 10 AND 20))) GROUP BY "table_name" HAVING COUNT(*) >= 2
+            let query = `SELECT COUNT(*) as count_tables, "table_name" from speed_up_tables_4 where `
             let counter = frontendQuery.length
             for (let data of frontendQuery) {
-                query += `'${data.loincCode.loincnum}'= ANY("LOINCs")`
+                query += `("LOINC" = '${data.loincCode.loincnum}' AND (`
+                query += `(${data.value.fromValue} BETWEEN "Min" and "Max")`
+                query += ` OR `
+                query += `(${data.value.toValue} BETWEEN "Min" and "Max")`
+                query += ` OR `
+                query += `("Min" BETWEEN ${data.value.fromValue} AND ${data.value.toValue})`
+                query += ` OR `
+                query += `("Max" BETWEEN ${data.value.fromValue} AND ${data.value.toValue})`
+                query += `))`
 
                 if (!--counter) {
                     continue
                 }
                 else {
-                    query += ' AND '
+                    query += ' OR '
                 }
             }
+            query += ` GROUP BY "table_name" HAVING COUNT(*) >= ${frontendQuery.length}`
             const speedUpResult = await collectionDB.query(query)
             for (let res of speedUpResult.rows) {
                 tableNames.push(res.table_name)
-            }
-                
-            // END NEWEST VERSION
+            } 
+
+            // END SPEED_UP_TABLES_4
 
             for (let tableName of tableNames) {
 

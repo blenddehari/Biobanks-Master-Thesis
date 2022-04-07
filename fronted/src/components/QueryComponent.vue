@@ -151,7 +151,8 @@
         <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch>
     </div>
 
-<v-dialog v-model="showThreshold" max-width="600" transition="dialog-bottom-transition" >
+<transition>
+<v-dialog v-model="showThreshold" max-width="600"  >
      <v-card v-show="showThreshold" style="width: 600px; margin:auto; "
             elevation="2"
         >
@@ -262,6 +263,7 @@
             </div>
         </v-card>
 </v-dialog>
+</transition>
 
     <div style="margin: 2em; z-index:0">
 
@@ -352,7 +354,7 @@
       <template #expanded-item="{ headers, item }">
         <td  :colspan="headers.length ">
             <v-row >
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="12">
                    <h4 class="text" style="display:inline; ">Expected hits per LOINC: </h4>
                    <v-chip  style="margin:10px;"  v-for="(row,index) in item.goodHits" :key="index" dark>
                        <v-chip class="ma-2" small
@@ -364,7 +366,7 @@
             </v-row>
             <v-divider></v-divider>
             <v-row >
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="12">
                     <h4 class="text" style="display:inline; margin-right:50px;">Hit ratio per LOINC: </h4>
                     <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColorPerLoinc(row.goodValuesInPercentage * 100)" dark>
                        <v-chip class="ma-2" small 
@@ -932,5 +934,28 @@ export default {
     color: red;
     background-color: red;
     background: red;
+}
+.v-enter-from {
+    opacity: 0;
+    transform: translateY(-30px)
+    /* transform: dialog-bottom-transition; */
+}
+.v-enter-active {
+    transition: all 0.3s ease-out
+}
+.v-enter-to {
+    opacity: 1;
+    transform: translateY(0);
+}
+.v-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+}
+.v-leave-active {
+    transition: all 0.3s ease-out
+}
+.v-leave-to {
+    opacity: 0;
+    transform: translateY(30px)
 }
 </style>
