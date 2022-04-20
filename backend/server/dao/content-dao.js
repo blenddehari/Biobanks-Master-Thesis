@@ -350,34 +350,35 @@ class ContentDAO {
 
                 }
 
-                // SPEED_UP_TABLES_4 PROCESS
-                let minValue
-                let maxValue
-                let minQuery = ''
-                let maxQuery = ''
-                for (let column of data.columns) {
-                    minQuery = `SELECT MIN("${column.code}_from") from ${tableName}`
-                    maxQuery = `SELECT MAX("${column.code}_to") from ${tableName}`
+                 // SPEED_UP_TABLES_4 PROCESS
+              let minValue
+              let maxValue
+              let minQuery = ''
+              let maxQuery = ''
+              for (let column of data.columns) {
+                  minQuery = `SELECT MIN("${column.code}_from") from "${tableName}"`
+                  maxQuery = `SELECT MAX("${column.code}_to") from "${tableName}"`
+                  minValue = await collectionDB.query(minQuery)
+                  maxValue = await collectionDB.query(maxQuery)
+                  minValue = parseFloat(minValue.rows[0].min)
+                  maxValue = parseFloat(maxValue.rows[0].max)
 
-                    minValue = await collectionDB.query(minQuery)
-                    maxValue = await collectionDB.query(maxQuery)
-                
-                    let speedUp4Query = `SELECT * where table_name = ${tableName} AND LOINC = '${column.code}'`
-                    speedUp4Query = await collectionDB.query(speedUp4Query)
-    
-                    if (speedUp4Query.rows.length === 0) {
-                    speedUp4Query = `INSERT INTO speed_up_tables_4 (table_name, LOINC, Min, Max) values (${tableName}, ${column.code}, ${minValue}, ${maxValue})`
-                    let runQuery = await collectionDB.query(speedUp4Query)
-                    console.log(runQuery)
-                    } else {
-                    console.log(speedUp4Query.rows[0])
-                    speedUp4Query = `UPDATE Min=${minValue}, Max=${maxValue} WHERE table_name=${tableName} and LOINC=${column.code}`
-                    runQuery = await collectionDB.query(speedUp4Query)
-                    console.log(runQuery)
+                  let speedUp4Query = `SELECT * from speed_up_tables_4 where "table_name" = '${tableName}' AND "LOINC" = '${column.code}'`
+                  speedUp4Query = await collectionDB.query(speedUp4Query)
+  
+                  if (speedUp4Query.rows.length === 0) {
+                  speedUp4Query = `INSERT INTO speed_up_tables_4 ("table_name", "LOINC", "Min", "Max") values ('${tableName}', '${column.code}', ${minValue}, ${maxValue})`
+                  let runQuery = await collectionDB.query(speedUp4Query)
+                  console.log(runQuery)
+                  } else {
+                  console.log(speedUp4Query.rows[0])
+                  speedUp4Query = `UPDATE Min=${minValue}, Max=${maxValue} WHERE table_name=${tableName} and LOINC=${column.code}`
+                  runQuery = await collectionDB.query(speedUp4Query)
+                  console.log(runQuery)
 
-                    }
-                }
-                // END SPEED_UP_TABLES_4 PROCESS
+                  }
+              }
+              // END SPEED_UP_TABLES_4 PROCESS
        
 
                 if (insertQuery.rowCount) {
@@ -496,6 +497,7 @@ class ContentDAO {
             }
             query += ` GROUP BY "table_name" HAVING COUNT(*) >= ${frontendQuery.length}`
             const speedUpResult = await collectionDB.query(query)
+            
             for (let res of speedUpResult.rows) {
                 tableNames.push(res.table_name)
             } 
