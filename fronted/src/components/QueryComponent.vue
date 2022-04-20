@@ -56,8 +56,14 @@
                     </v-col>
 
                     <v-col class="mt-2">
-                        <v-text-field v-model="input.value.fromValue" :label="rangeQuery ? 'FROM value' :  'Value'"
-                            solo :rules="rules" :error-messages="errorTexts" required></v-text-field>
+                        <v-text-field 
+                            v-model="input.value.fromValue" 
+                            :label="rangeQuery ? 'FROM value' :  'Value'"
+                            solo :rules="rules" 
+                            :error-messages="errorTexts" 
+                            required
+                            >
+                        </v-text-field>
                     </v-col>
 
                     <v-col class="mt-2">
@@ -116,7 +122,7 @@
     <br /> 
 
 
-    <div style="display:flex row; float: left; margin-right:2em; margin-top: 8px; margin-left: 5.5em;">
+    <div class="center-screen">
         <v-btn elevation="2" raised class="fancyButton" v-on:click="submit()">
             <v-icon style="margin-right:0px">mdi-magnify</v-icon>Search
         </v-btn>
@@ -136,6 +142,7 @@
            <v-icon style="margin-right:0px">mdi-tune</v-icon> Choose Thresholds
         </v-btn>
 
+        <v-switch class="fancySwitch" v-model="rangeQuery" inset  label="Range Query"></v-switch> 
        
             
         <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="toggleQueryType()">
@@ -146,13 +153,12 @@
          <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="consoleLog()">Console Log</v-btn> -->
     </div>
 
-    <div style="display:flex row;">
+    <!-- <div style="display:flex row;"> -->
+        <!-- <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch> -->
         <!-- <v-switch v-model="rangeQuery" inset  :label="rangeQuery ? 'Point Query' : 'Range Query'"></v-switch> -->
-        <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch>
-    </div>
+    <!-- </div> -->
 
-<transition>
-<v-dialog v-model="showThreshold" max-width="600"  >
+<v-dialog v-model="showThreshold" max-width="600" transition="dialog-bottom-transition">
      <v-card v-show="showThreshold" style="width: 600px; margin:auto; "
             elevation="2"
         >
@@ -263,7 +269,6 @@
             </div>
         </v-card>
 </v-dialog>
-</transition>
 
     <div style="margin: 2em; z-index:0">
 
@@ -708,7 +713,8 @@ export default {
               } catch (error) {
                   this.isLoading = false
                   this.datasetsLoaded = false
-                  this.errorTitle = 'Something went wrong!'
+
+                  error === 'Please fill in all the fields!' ? this.errorTitle = 'Something went wrong!' : this.errorTitle = 'Could not find matches for your query!'
 
                   console.log("ERROR HERE", error)
 
@@ -889,7 +895,8 @@ export default {
     background-color: #A9A9A9;
 }
 .form {
-    margin-top: 2em
+    margin-top: 2em;
+    margin-left: 20em;
 }
 .text {
     font-size: 1.1em;
@@ -929,6 +936,21 @@ export default {
   text-transform: none !important;
   margin-left: 2em
 }
+
+.fancySwitch {
+    height: 48px !important;
+    display: flex row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    border-radius: 5px !important;
+    font-family: "Arial";
+    font-size: 12pt !important;
+    font-weight: normal !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    margin-left: 2em 
+}
+
 .testClass {
     border-color: red;
     color: red;
@@ -957,5 +979,19 @@ export default {
 .v-leave-to {
     opacity: 0;
     transform: translateY(30px)
+}
+.center-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* min-height: 100vh; */
+}
+.center-somewhere {
+    display:flex row; 
+    float: left; 
+    margin-right:2em; 
+    margin-top: 8px;
+    margin-left: 19.5em;
 }
 </style>

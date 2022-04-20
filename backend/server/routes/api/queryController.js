@@ -12,7 +12,7 @@ router.post('/data', async (req, res) => {
         if (datasets.length > 0) {
             res.send(datasets)
         }
-        else throw new Error('There is no data containing that LOINC code!')
+        else throw new Error('No data was found for your search!')
     }
     catch(e) {
         console.error('Data could not be retrieved!')
