@@ -323,6 +323,8 @@
             </v-col>
         </v-row> -->
 
+        <h3 v-show="datasetsLoaded && !isLoading">Time: {{ queryTime }} seconds ({{ (queryTime / 60).toFixed(2)}} minutes)</h3>
+
         <!-- NEW TABLE (EXPANDABLE)  -->
         <v-data-table 
             v-if="datasetsLoaded"
@@ -478,6 +480,7 @@ export default {
               expanded: [],
               overallExpectedHitThreshold: false,
               overallExpectedHitsPerLoincThreshold: false,
+              queryTime: '',
               temporaryFakeDatasets: [
     {
         "biobankId": "biobank_6",
@@ -687,6 +690,7 @@ export default {
           async submit() {
               try {
                 this.isLoading = true
+                this.queryTime = new Date()
                 for (let input of this.inputs) {
                     if (!input.value.toValue) {
                         input.value['toValue'] = input.value['fromValue']
@@ -710,6 +714,7 @@ export default {
                 setTimeout(() => this.successTitle = "", 4000)
                 setTimeout(() => this.successDetail = "", 4000)
                 this.isLoading = false
+                this.queryTime = (new Date() - this.queryTime) / 1000
               } catch (error) {
                   this.isLoading = false
                   this.datasetsLoaded = false
@@ -985,6 +990,7 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin-bottom: 5em;
   /* min-height: 100vh; */
 }
 .center-somewhere {
