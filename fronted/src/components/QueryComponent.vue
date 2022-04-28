@@ -12,9 +12,29 @@
         ></v-progress-circular>
     </v-overlay>
 
-
-    <div v-for="(input, index) in inputs" :key="index">
-        <v-form class="form" ref="form" lazy-validation v-model="valid"> 
+<!-- <v-card style="margin-left: 4em; margin-right: 5em;"> -->
+    <!-- <v-sheet
+      color="grey 'lighten-2'"
+      class="pa-3"
+    > -->
+    <v-sheet
+  color="white"
+  elevation="2"
+  rounded
+  :class="rangeQuery ? 'rangeQuerySheet' : 'pointQuerySheet'"
+>
+    <div v-if="isLoading" >	
+        <div>
+            <v-skeleton-loader v-for="(input, index) in inputs" :key="index"
+                max-width="200%"
+                min-width="200%"
+                type="card-heading"
+                fluid
+            ></v-skeleton-loader>
+        </div>
+    </div>
+    <div v-for="(input, index) in inputs" :key="index" v-else>
+        <v-form :class="rangeQuery ? 'formExpand' : 'form'" ref="form" lazy-validation v-model="valid"> 
             <v-container class="container">
                 <v-row style="margin-left:-2em; align-self: auto" >
 
@@ -115,14 +135,35 @@
         <br />
 
     </div>
+<!-- </v-card> -->
+</v-sheet>
 
     <!-- <v-btn elevation="2" raised class="button" v-on:click="toggleQueryType()">
         {{rangeQuery ? "Point Query" : "Range Query"}}</v-btn> -->
 
     <br /> 
 
-
-    <div class="center-screen">
+<v-sheet
+  color="white"
+  elevation="2"
+  height="120"
+  rounded
+  style="margin-left:200px;margin-right:200px; padding: 1.5em;"
+>
+<!-- <v-card style="margin-left: 10em; marin-right: -6em;" > -->
+     <div v-if="isLoading" >	
+        <div>
+            <v-skeleton-loader
+            class="fancyButtonSkeleton"
+            style="display: flex;flex-wrap: wrap;flex-direction: row;"
+                max-width="100%"
+                min-width="100%"
+                type="button@5"
+                fluid
+            ></v-skeleton-loader>
+        </div>
+    </div>
+    <div class="center-screen" v-else>
         <v-btn elevation="2" raised class="fancyButton" v-on:click="submit()">
             <v-icon style="margin-right:0px">mdi-magnify</v-icon>Search
         </v-btn>
@@ -269,6 +310,8 @@
             </div>
         </v-card>
 </v-dialog>
+<!-- </v-card> -->
+</v-sheet>
 
     <div style="margin: 2em; z-index:0">
 
@@ -324,10 +367,19 @@
         </v-row> -->
 
         <h3 v-show="datasetsLoaded && !isLoading">Time: {{ queryTime }} seconds ({{ (queryTime / 60).toFixed(2)}} minutes)</h3>
-
+       <div v-if="isLoading" >
+			<div>
+				<v-skeleton-loader
+					class="mx-auto"
+					max-width="100%"
+					type="table-heading, table-row-divider@15, table-tfoot"
+					fluid
+				></v-skeleton-loader>
+			</div>
+		</div>
         <!-- NEW TABLE (EXPANDABLE)  -->
         <v-data-table 
-            v-if="datasetsLoaded"
+            v-if="datasetsLoaded && !isLoading"
             id="rankingTable"
             :headers="headers2"
             :items="datasets" 
@@ -899,9 +951,19 @@ export default {
 .round:hover {
     background-color: #A9A9A9;
 }
+.formExpand {
+    margin-top: 2em;
+    margin-left: 10em;
+}
 .form {
     margin-top: 2em;
-    margin-left: 20em;
+    margin-left: 10em;
+}
+.pointQuerySheet {
+    margin-left:200px;margin-right:200px; padding: 10px; margin-top: 1.5em;
+}
+.rangeQuerySheet {
+    margin-left:100px;margin-right:100px; padding: 10px; margin-top: 1.5em;
 }
 .text {
     font-size: 1.1em;
@@ -954,6 +1016,20 @@ export default {
     letter-spacing: 0 !important;
     text-transform: none !important;
     margin-left: 2em 
+}
+
+.fancyButtonSkeleton {
+    height: 48px !important;
+    display: flex row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    border-radius: 5px !important;
+    font-family: "Arial";
+    font-size: 12pt !important;
+    font-weight: normal !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    margin-left: 0.5em 
 }
 
 .testClass {
