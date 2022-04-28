@@ -18,17 +18,17 @@
       class="pa-3"
     > -->
     <v-sheet
-  color="white"
-  elevation="2"
-  rounded
-  :class="rangeQuery ? 'rangeQuerySheet' : 'pointQuerySheet'"
->
+        color="blue-grey lighten-1"
+        elevation="2"
+        rounded
+        :class="rangeQuery ? 'rangeQuerySheet' : 'pointQuerySheet'"
+    >
     <div v-if="isLoading" >	
         <div>
             <v-skeleton-loader v-for="(input, index) in inputs" :key="index"
                 max-width="200%"
                 min-width="200%"
-                type="card-heading"
+                type="heading"
                 fluid
             ></v-skeleton-loader>
         </div>
@@ -144,11 +144,11 @@
     <br /> 
 
 <v-sheet
-  color="white"
+  color="blue-grey lighten-1"
   elevation="2"
   height="120"
   rounded
-  style="margin-left:200px;margin-right:200px; padding: 1.5em;"
+  style="margin-left:200px;margin-right:200px; padding: 1.5em; "
 >
 <!-- <v-card style="margin-left: 10em; marin-right: -6em;" > -->
      <div v-if="isLoading" >	
@@ -183,7 +183,7 @@
            <v-icon style="margin-right:0px">mdi-tune</v-icon> Choose Thresholds
         </v-btn>
 
-        <v-switch class="fancySwitch" v-model="rangeQuery" inset  label="Range Query"></v-switch> 
+        <v-switch class="fancySwitch" dark v-model="rangeQuery" inset  label="Range Query"></v-switch> 
        
             
         <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="toggleQueryType()">
@@ -366,13 +366,13 @@
             </v-col>
         </v-row> -->
 
-        <h3 v-show="datasetsLoaded && !isLoading">Time: {{ queryTime }} seconds ({{ (queryTime / 60).toFixed(2)}} minutes)</h3>
+        <h3 style="color: white;" v-show="datasetsLoaded && !isLoading">Time: {{ queryTime }} seconds ({{ (queryTime / 60).toFixed(2)}} minutes)</h3>
        <div v-if="isLoading" >
 			<div>
 				<v-skeleton-loader
 					class="mx-auto"
 					max-width="100%"
-					type="table-heading, table-row-divider@15, table-tfoot"
+					type="heading, table-row-divider@15, table-tfoot"
 					fluid
 				></v-skeleton-loader>
 			</div>
@@ -387,7 +387,6 @@
             :expanded.sync="expanded"
             item-key="collectionId"
             show-expand
-            class="elevation-1"
             style="margin-top:10px;" 
             disable-sort
         >
@@ -973,7 +972,8 @@ export default {
     text-transform: none ;
 }
 #rankingTable table thead tr th {
-    background-color: rgba(182, 183, 187);
+    /* background-color: rgba(182, 183, 187); */
+    background-color: #78909C;
     color: white;
     font-size: 1.3em;
     font-family: "Arial";
@@ -1015,7 +1015,7 @@ export default {
     font-weight: normal !important;
     letter-spacing: 0 !important;
     text-transform: none !important;
-    margin-left: 2em 
+    margin-left: 2em ;
 }
 
 .fancyButtonSkeleton {
@@ -1075,5 +1075,11 @@ export default {
     margin-right:2em; 
     margin-top: 8px;
     margin-left: 19.5em;
+}
+
+#app {
+  background: url('https://images.unsplash.com/photo-1628595351029-c2bf17511435?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2064&q=80')
+    no-repeat center center fixed !important;
+  background-size: cover;
 }
 </style>
