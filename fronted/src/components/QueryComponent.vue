@@ -18,7 +18,7 @@
       class="pa-3"
     > -->
     <v-sheet
-        color="blue-grey lighten-1"
+        color="#78909Cad"
         elevation="2"
         rounded
         :class="rangeQuery ? 'rangeQuerySheet' : 'pointQuerySheet'"
@@ -144,7 +144,7 @@
     <br /> 
 
 <v-sheet
-  color="blue-grey lighten-1"
+  color="#78909Cad"
   elevation="2"
   height="120"
   rounded
@@ -173,7 +173,7 @@
             <v-icon style="margin-right:0px">mdi-table-row-remove</v-icon>Clear Query Data
         </v-btn>
 
-        <!-- TEMOPORARY - SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
+        <!-- TEMPORARY - SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
 
         <v-btn elevation="2" raised class="fancyButton" @click="simulatePatrickSendingData()">
            Simulate Patrick sending data
@@ -959,7 +959,7 @@ export default {
     margin-left: 10em;
 }
 .pointQuerySheet {
-    margin-left:200px;margin-right:200px; padding: 10px; margin-top: 1.5em;
+    margin-left:200px;margin-right:200px; padding: 10px; margin-top: 1.5em; 
 }
 .rangeQuerySheet {
     margin-left:100px;margin-right:100px; padding: 10px; margin-top: 1.5em;
