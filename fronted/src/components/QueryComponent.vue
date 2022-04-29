@@ -176,7 +176,7 @@
         <!-- TEMPORARY - SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
 
         <v-btn elevation="2" raised class="fancyButton" @click="simulatePatrickSendingData()">
-           Simulate Patrick sending data
+          <v-icon style="margin-right:0px">mdi-lan-pending</v-icon> Simulate Patrick sending data
         </v-btn>
         
         <v-btn elevation="2" raised class="fancyButton" @click="toggleThreshold">
