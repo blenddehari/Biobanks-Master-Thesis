@@ -25,7 +25,7 @@
     >
     <div v-if="isLoading" >	
         <div>
-            <v-skeleton-loader v-for="(input, index) in inputs" :key="index"
+            <v-skeleton-loader v-for="(input, index) in inputs" :key="index" style="margin: 1.5em;"
                 max-width="200%"
                 min-width="200%"
                 type="heading"
@@ -176,7 +176,7 @@
         <!-- TEMPORARY - SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
 
         <v-btn elevation="2" raised class="fancyButton" @click="simulatePatrickSendingData()">
-          <v-icon style="margin-right:0px">mdi-lan-pending</v-icon> Simulate Patrick sending data
+          <v-icon style="margin-right:0px">mdi-lan-pending</v-icon> Simulate biobanks sending data
         </v-btn>
         
         <v-btn elevation="2" raised class="fancyButton" @click="toggleThreshold">
@@ -1082,4 +1082,5 @@ export default {
     no-repeat center center fixed !important;
   background-size: cover;
 }
+
 </style>

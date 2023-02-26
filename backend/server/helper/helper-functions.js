@@ -1,5 +1,14 @@
 var _ = require('lodash');
 const dataSample = require('../helper/dataStructureSample.json')
+const dataSample2 = require('../helper/data-structure-samples/dataStructureSample2.json')
+const dataSample3 = require('../helper/data-structure-samples/dataStructureSample3.json')
+const dataSample4 = require('../helper/data-structure-samples/dataStructureSample4.json')
+const dataSample5 = require('../helper/data-structure-samples/dataStructureSample5.json')
+const dataSample6 = require('../helper/data-structure-samples/dataStructureSample6.json')
+const dataSample7 = require('../helper/data-structure-samples/dataStructureSample7.json')
+const dataSample8 = require('../helper/data-structure-samples/dataStructureSample8.json')
+const dataSample9 = require('../helper/data-structure-samples/dataStructureSample9.json')
+const dataSample10 = require('../helper/data-structure-samples/dataStructureSample10.json')
 
 
 class HelperFunctions {
@@ -45,9 +54,29 @@ class HelperFunctions {
         let fullCollection = dataSample.anonymizations[0]
         let definitionExample1 = dataSample.anonymizations[1]
         let definitionExample2 = dataSample.anonymizations[2]
-        console.log(fullCollection)
+        let fullCollectionWithBigData = dataSample.anonymizations[3]
+        let fullCollectionWithVeryBigData = dataSample.anonymizations[4]
 
-        let res = this.parseData(fullCollection)
+        // our 9 big data tables below
+        // let bigDataTable1 = dataSample2.anonymizations[0]
+        // let bigDataTable2 = dataSample3.anonymizations[0]
+        // let bigDataTable3 = dataSample4.anonymizations[0]
+        // let bigDataTable4 = dataSample5.anonymizations[0]
+        // let bigDataTable5 = dataSample6.anonymizations[0]
+        // let bigDataTable6 = dataSample7.anonymizations[0]
+        // let bigDataTable7 = dataSample8.anonymizations[0]
+        // let bigDataTable8 = dataSample9.anonymizations[0]
+        let def2 = dataSample10.anonymizations[0]
+        let col2 = dataSample10.anonymizations[1]
+        let def3 = dataSample10.anonymizations[2]
+        console.log(def3)
+
+        // for (let i = 4; i < 10; i++) {
+        //     console.log(`bigDataTable${i}`)
+        //     return this.parseData(bigDataTable1)
+        // }
+
+        let res = this.parseData(def2)
 
         return res
     };
