@@ -52,7 +52,7 @@ class ContentDAO {
             console.log(query)
             const createdTable = await collectionDB.query(query)
 
-            // SPEED UP TABLE PROCESS
+            // SPEED UP TABLE PROCESS (Index Version 1)
             // let addColumns = ''
             query = `INSERT INTO speed_up_tables `
             let insertColumns = `"table_name",`
@@ -88,7 +88,7 @@ class ContentDAO {
             // add every column to our speed_up_table as a column -> ALTER speed_up_table
             // we would then write one row in this speed_up_table for table_name
 
-            // test speed_up_tables_2
+            // test speed_up_tables_2 (Index Version 2)
             query = `INSERT INTO speed_up_tables_2 ("table_name", "LOINCs") values `
             // let addColumns = `"table_name", "LOINCs"`
             let addValues = `'${tableName}', ARRAY [`
@@ -127,7 +127,7 @@ class ContentDAO {
                  insertQuery = await collectionDB.query(query)
             }
 
-              // SPEED_UP_TABLES_4 PROCESS
+              // SPEED_UP_TABLES_4 PROCESS (Index Version 3)
               let minValue
               let maxValue
               let minQuery = ''
@@ -217,7 +217,7 @@ class ContentDAO {
 
                 }
 
-                 // SPEED_UP_TABLES_4 PROCESS
+                 // SPEED_UP_TABLES_4 PROCESS (Index version 3)
                 let minValue
                 let maxValue
                 let minQuery = ''
@@ -273,7 +273,7 @@ class ContentDAO {
                 console.log(query)
                 const createdTable = await collectionDB.query(query)
 
-                 // SPEED UP TABLE PROCESS
+                 // SPEED UP TABLE PROCESS (Index version 1)
                 // let addColumns = ''
                 query = `INSERT INTO speed_up_tables `
                 let insertColumns = `"table_name",`
@@ -307,7 +307,7 @@ class ContentDAO {
                 console.log(speedQuery)
 
 
-                // test speed_up_tables_2
+                // test speed_up_tables_2 (Index version 2)
             query = `INSERT INTO speed_up_tables_2 ("table_name", "LOINCs") values `
             let addColumns = `"table_name", "LOINCs"`
             let addValues = `'${tableName}', ARRAY [`
@@ -350,7 +350,7 @@ class ContentDAO {
 
                 }
 
-                 // SPEED_UP_TABLES_4 PROCESS
+              // SPEED_UP_TABLES_4 PROCESS (Index Version 3)
               let minValue
               let maxValue
               let minQuery = ''
@@ -389,9 +389,6 @@ class ContentDAO {
                 }
             //if yes then edit the table (add to it - alter)
             //if no then create definition table the same way as collection table (only + definition_id)
-
-            // query = `INSERT INTO ${tableName}(biobank_id, collection_id, index_id, "10156-8_from", "10156-8_to", "10157-6_from", "10157-6_to", "10165-9_from", "10165-9_to", number_of_rows) values ('biobank_7', 'collection_7', 'index_7', 4, 8, 6, 9, 2, 10, 25)`
-
             }
         }
     }
@@ -403,7 +400,7 @@ class ContentDAO {
             let tableNames = []
             let columns
 
-            // OLD VERSION : CHECK ALL TABLES
+            // INITIAL VERSION : CHECK ALL TABLES
             // let query = `select t.table_name, array_agg(c.column_name::text) as columns
             //                     from information_schema.tables t
             //                     inner join information_schema.columns c on t.table_name = c.table_name
@@ -430,7 +427,7 @@ class ContentDAO {
             //         }
             //     }
 
-            // ONLY QUERY THE SPEED_UP_TABLE
+            // ONLY QUERY THE SPEED_UP_TABLE (Index Version 1)
             // let query = `SELECT table_name from speed_up_tables WHERE `
             // let queryLoincs = ''
             // let counter = frontendQuery.length
@@ -451,7 +448,7 @@ class ContentDAO {
             // }
             // END SPEED_UP_TABLE
 
-            //  query the speed_up_tables_2
+            //  query the speed_up_tables_2 (Index Version 2)
             // let query = `SELECT table_name from speed_up_tables_2 WHERE `
             // let counter = frontendQuery.length
             // for (let data of frontendQuery) {
@@ -471,7 +468,7 @@ class ContentDAO {
             // END speed_up_tables_2
 
 
-            // QUERY SPEED_UP_TABLES_4
+            // QUERY SPEED_UP_TABLES_4 (Index Version 3)
 
             // QUERY: SELECT COUNT(*) as count_tables, "table_name" from speed_up_tables_4 where ("LOINC" = '1-8' AND ((50 BETWEEN "Min" and "Max") OR (100 BETWEEN "Min" and "Max") 
             // OR ("Min" BETWEEN 50 and 100) OR ("Max" BETWEEN 50 AND 100))) OR ("LOINC" = '39243-1' AND ((10 BETWEEN "Min" and "Max") OR (20 BETWEEN "Min" and "Max") OR ("Min" BETWEEN 10 and 20) OR ("Max" BETWEEN 10 AND 20))) GROUP BY "table_name" HAVING COUNT(*) >= 2
@@ -513,26 +510,19 @@ class ContentDAO {
                     let searchByNumber = !isNaN(el.value.fromValue) && !isNaN(el.value.toValue)
                     selectQueryLoincColumns += ` "${el.loincCode.loincnum}_from", "${el.loincCode.loincnum}_to", `
                     if (searchByNumber) {
-                    // whereClause += `("${el.loincCode.loincnum}_from"::integer BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::integer BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
-
-                    // make this query only if the fromValue === toValue, otherwise make the query from before!
-                    // if (el.value.fromValue === el.value.toValue) {
+                        // make this query only if the fromValue === toValue, otherwise make the query from before!
                         whereClause += `(${el.value.fromValue} BETWEEN "${el.loincCode.loincnum}_from"::numeric and "${el.loincCode.loincnum}_to"::numeric) OR ( ${el.value.toValue} BETWEEN "${el.loincCode.loincnum}_from"::numeric and "${el.loincCode.loincnum}_to"::numeric) OR ("${el.loincCode.loincnum}_from"::numeric BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::numeric BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
-                    // }
-                    // else {
-                    //     whereClause += `("${el.loincCode.loincnum}_from"::integer BETWEEN ${el.value.fromValue} and ${el.value.toValue}) OR ("${el.loincCode.loincnum}_to"::integer BETWEEN  ${el.value.fromValue} and ${el.value.toValue})`
-                    // }
 
-                    //escape for last element
-                    if (!--counter) {
-                        continue
-                    }
-                    else {
-                        whereClause += ' and '
-                    }
+                        //escape for last element
+                        if (!--counter) {
+                            continue
+                        }
+                        else {
+                            whereClause += ' and '
+                        }
                  
-                // TODO: in the future we might have two kinds of tables (indexes and collections(i.e. index_todaysDateAsId, collection_todaysDateAsId) and then similar to when we have two kinds of queries for getting loinc codes by code or name, we might make two different queries where if the name of the table starts with 'index_' we have the query just like below, whereas if the name of the table starts with 'collection_' then we do the query which will be all the same like the one for the index, except it will not have an index_id column! Then in frontend we will display N/A for index_id column when we send collections.)
-                // TODO: in the future, rewrite queries as parametrized queries instead of template string queries to prevent sql injections and do automatic sanitizing of the data
+                    // TODO: in the future we might have two kinds of tables (indexes and collections(i.e. index_todaysDateAsId, collection_todaysDateAsId) and then similar to when we have two kinds of queries for getting loinc codes by code or name, we might make two different queries where if the name of the table starts with 'index_' we have the query just like below, whereas if the name of the table starts with 'collection_' then we do the query which will be all the same like the one for the index, except it will not have an index_id column! Then in frontend we will display N/A for index_id column when we send collections.)
+                    // TODO: in the future, rewrite queries as parametrized queries instead of template string queries to prevent sql injections and do automatic sanitizing of the data
 
                     }  
                     // if we search by string (ex: 66476-3(country): europe)
@@ -555,28 +545,21 @@ class ContentDAO {
                 } else if (tableName.startsWith('definition')) {
                     query = `select definition_id as definition_id, biobank_id as biobank_id, collection_id as collection_id, ${selectQueryLoincColumns} number_of_rows as number_of_rows from "${tableName}" ${whereClause} order by number_of_rows desc`
                 }
-                // query = `select biobank_id as biobank_id, collection_id as collection_id, SUM(number_of_rows) as number_of_rows from "${tableName}" ${whereClause} GROUP BY biobank_id, collection_id order by number_of_rows desc`
                 console.log(query)
 
                     const res = await collectionDB.query(query)
                     if (res) {
-                        // return res.rows
                         result.push(res.rows)
                     }
             }
             console.log(result)
             let frontendLoincs = frontendQuery.map(function(row) { return {loincCode: row.loincCode.loincnum, fromValue: row.value.fromValue, toValue: row.value.toValue }})
-            // result = [frontendLoincs, ...result[0]]
             for (let arr of result) {
                 console.log(arr)
-                // for (let frontendRow of frontendLoincs) {
                 for (let row of arr) {
                     row['frontendQuery'] = frontendLoincs
-                        // Object.assign(row, frontendRow)
                     }
-                // }
             }
-            // result = result.map(row => [frontendLoincs, ...row])
             console.log(result)
 
             return result
@@ -591,12 +574,3 @@ class ContentDAO {
 let contentDAO = new ContentDAO()
 
 module.exports = contentDAO
-
-// const query = async () => {
-//     const result = await client.query(`select loinc_num as loincNum, component as loincComponent from loinc`)
-//     console.log(result.rows)
-//     client.end()
-// }
-
-
-// query()

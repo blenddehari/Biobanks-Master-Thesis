@@ -3,8 +3,6 @@
     <ErrorAlert v-model="errorTitle">{{ errorDetail }}</ErrorAlert>
     <ErrorAlert v-model="successTitle" type="success">{{ successDetail }}</ErrorAlert>
     <v-overlay :value="isLoading">
-         <!-- <v-progress-linear indeterminate color="primary" rounded height="5" striped>
-        </v-progress-linear> -->
           <v-progress-circular
           indeterminate
           size="64"
@@ -12,11 +10,6 @@
         ></v-progress-circular>
     </v-overlay>
 
-<!-- <v-card style="margin-left: 4em; margin-right: 5em;"> -->
-    <!-- <v-sheet
-      color="grey 'lighten-2'"
-      class="pa-3"
-    > -->
     <v-sheet
         color="#78909Cad"
         elevation="2"
@@ -41,23 +34,6 @@
                     <v-col class="mt-2" >
                         <v-text-field required v-model="input.name" label="Attribute name" solo :rules="rules" :error-messages="errorTexts"></v-text-field>
                     </v-col>
-
-                    <!-- OLD SOLUTION: GETTING ALL LOINCS ON CREATED() --> 
-                    <!-- <v-col  class="mt-2">
-                        <v-combobox clearable v-model="input.loincCode" :items="loincCodes"
-                            :item-text="item => item.loincnum +' ('+ item.loinccomponent + ')'"
-                            :item-value="item => item.loincnum" label="Search LOINC codes" solo return-object required :rules="rules" :error-messages="errorTexts">
-                            <template v-slot:selection="{ attrs, item, selected }">
-                                <v-chip v-if="item === Object(item)" v-bind="attrs" color="lighten-3"
-                                    :input-value="selected" label small>
-                                    <span>
-                                        {{ item.loincnum }} ({{item.loinccomponent}})
-                                    </span>
-                                </v-chip>
-                            </template>
-
-                        </v-combobox>
-                    </v-col> -->
 
                     <!-- GETTING LOINCS ON SERVER-SIDE SEARCH --> 
                     <v-col class="mt-2">
@@ -116,17 +92,6 @@
                         </span>
                     </v-col>
 
-                     <!-- <v-col align-self="baseline" cols="15"  md="3">
-                         <div class="helperIcons">
-                            <i class="round" @click="remove(index)" v-show="index || (!index && inputs.length > 1)">
-                                <v-icon style="margin-right:0px">mdi-minus</v-icon>
-                            </i>
-                            <i class="round" @click="add(index)" v-show="index == inputs.length - 1">
-                                <v-icon style="margin-right:0px">mdi-plus</v-icon>
-                            </i>
-                        </div>
-                     </v-col> -->
-
                 </v-row>
 
             </v-container>
@@ -138,6 +103,7 @@
 <!-- </v-card> -->
 </v-sheet>
 
+    <!-- Uncomment this if you want the button text to be dynamic based on the query type -->
     <!-- <v-btn elevation="2" raised class="button" v-on:click="toggleQueryType()">
         {{rangeQuery ? "Point Query" : "Range Query"}}</v-btn> -->
 
@@ -173,7 +139,7 @@
             <v-icon style="margin-right:0px">mdi-table-row-remove</v-icon>Clear Query Data
         </v-btn>
 
-        <!-- TEMPORARY - SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
+        <!-- SIMULATE PATRICK SENDING DATA TO THE BACKEND -->
 
         <v-btn elevation="2" raised class="fancyButton" @click="simulatePatrickSendingData()">
           <v-icon style="margin-right:0px">mdi-lan-pending</v-icon> Simulate biobanks sending data
@@ -184,20 +150,7 @@
         </v-btn>
 
         <v-switch class="fancySwitch" dark v-model="rangeQuery" inset  label="Range Query"></v-switch> 
-       
-            
-        <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="toggleQueryType()">
-            <v-icon v-if="!rangeQuery" style="margin-right:0px; padding-right:5px; width: 160%;">mdi-toggle-switch-off</v-icon>
-            <v-icon v-else style="margin-right:0px; padding-right:5px; width: 160%;">mdi-toggle-switch</v-icon>
-        {{rangeQuery ? "Point Query" : "Range Query"}}</v-btn> -->
-
-         <!-- <v-btn elevation="2" raised class="fancyButton" v-on:click="consoleLog()">Console Log</v-btn> -->
     </div>
-
-    <!-- <div style="display:flex row;"> -->
-        <!-- <v-switch v-model="rangeQuery" inset  label="Range Query"></v-switch> -->
-        <!-- <v-switch v-model="rangeQuery" inset  :label="rangeQuery ? 'Point Query' : 'Range Query'"></v-switch> -->
-    <!-- </div> -->
 
 <v-dialog v-model="showThreshold" max-width="600" transition="dialog-bottom-transition">
      <v-card v-show="showThreshold" style="width: 600px; margin:auto; "
@@ -314,58 +267,6 @@
 </v-sheet>
 
     <div style="margin: 2em; z-index:0">
-
-        <!-- OLD TABLE -->
-        <!-- <v-row align="center" justify="center">
-            <v-col>
-                <br />
-                <br />
-                <v-data-table id="rankingTable" v-if="datasetsLoaded" :headers="headers" :items="datasets" :items-per-page="5" 
-                    class="elevation-1" style="margin-top:10px" fixed-header disable-sort >
-                     <template v-slot:top>
-                        <v-toolbar flat color="white">
-                        <v-toolbar-title>Ranked Results</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        </v-toolbar>
-                     </template>
-                    <template v-slot:item="{ item }">
-                        <tr  style="text-align: center;">
-                            <td>{{ item.collectionId }}</td>
-                            <td>{{ item.biobankId }}</td>
-                             <td>   
-                                {{ item.numberOfRows }}
-                            </td>
-                           
-                            <td>
-                               <v-chip style="margin:10px;" :color="getColor(item.overallPercentage * 100)" dark> {{ parseFloat(item.overallPercentage * 100).toFixed(2) }}% </v-chip>
-                            </td>
-                            <td>
-                                <v-chip style="margin:10px;" :color="getColorForExpectedHits(item.overallExpectedRows)" dark> {{ Math.round(item.overallExpectedRows) }} </v-chip>
-                            </td>
-
-                             <td >
-                                <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>
-                                    <v-chip class="ma-2" small
-                                        color="white"
-                                        outlined>{{ row.code }}: 
-                                    </v-chip>    
-                                    {{Math.round(row.revisedNumberOfRows)}}</v-chip>
-                            </td>
-                            <td  >
-                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
-                                     <v-chip class="ma-2" small
-                                        color="white"
-                                        outlined>{{ row.code }}: 
-                                    </v-chip>   
-                                    {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
-                                </v-chip>
-                            </td>
-                        </tr>
-                    </template>
-                </v-data-table>
-            </v-col>
-        </v-row> -->
-
         <h3 style="color: white;" v-show="datasetsLoaded && !isLoading">Time: {{ queryTime }} seconds ({{ (queryTime / 60).toFixed(2)}} minutes)</h3>
        <div v-if="isLoading" >
 			<div>
@@ -444,26 +345,6 @@
                         <v-icon color="red" v-show="item.definitionId">mdi-close-circle</v-icon>          
                 </v-col>
             </v-row>
-          <!-- <v-simple-table >
-                  <thead  >
-                    <tr>
-                      <th>Expected hits per LOINC</th>
-                      <th>Hit ratio per LOINC</th>
-                     
-                    </tr>
-                  </thead>
-                  <tbody>
-                             <td >
-                                <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" dark>{{ row.code }}:  {{Math.round(row.revisedNumberOfRows)}}</v-chip>
-                            </td>
-                            <td  >
-                                 <v-chip style="margin:10px;" v-for="(row,index) in item.goodHits" :key="index" :color="getColor(row.goodValuesInPercentage * 100)" dark>
-                                     {{ row.code }}: {{ parseFloat(row.goodValuesInPercentage * 100).toFixed(2) }}%
-                                </v-chip>
-                            </td>
-
-                  </tbody>
-            </v-simple-table> -->
         </td>
       </template>
     </v-data-table>
@@ -484,8 +365,6 @@
 <script>
 import axios from 'axios'
 import ErrorAlert from './ErrorAlert.vue'
-// import { required } from 'vuelidate/lib/validators'
-
 
 export default { 
     name: 'QueryComponent',
@@ -533,46 +412,37 @@ export default {
               overallExpectedHitsPerLoincThreshold: false,
               queryTime: '',
               temporaryFakeDatasets: [
-    {
-        "biobankId": "biobank_6",
-        "collectionId": "collection_6",
-        "numberOfRows": 46,
-        "goodHits": [
-            {
-                "code": "10156-8",
-                "goodValuesInPercentage": 0.0625,
-                "revisedNumberOfRows": 2.875
-            }
-        ],
-        "overallPercentage": 0.0625,
-        "overallExpectedRows": 2.875
-    },
-    {
-        "biobankId": "biobank_1",
-        "collectionId": "collection_1",
-        "numberOfRows": 15,
-        "goodHits": [
-            {
-                "code": "10156-8",
-                "goodValuesInPercentage": 0.1111111111111111,
-                "revisedNumberOfRows": 1.6666666666666665
-            }
-        ],
-        "overallPercentage": 0.1111111111111111,
-        "overallExpectedRows": 1.6666666666666665
-    }
-],
+                    {
+                        "biobankId": "biobank_6",
+                        "collectionId": "collection_6",
+                        "numberOfRows": 46,
+                        "goodHits": [
+                            {
+                                "code": "10156-8",
+                                "goodValuesInPercentage": 0.0625,
+                                "revisedNumberOfRows": 2.875
+                            }
+                        ],
+                        "overallPercentage": 0.0625,
+                        "overallExpectedRows": 2.875
+                    },
+                    {
+                        "biobankId": "biobank_1",
+                        "collectionId": "collection_1",
+                        "numberOfRows": 15,
+                        "goodHits": [
+                            {
+                                "code": "10156-8",
+                                "goodValuesInPercentage": 0.1111111111111111,
+                                "revisedNumberOfRows": 1.6666666666666665
+                            }
+                        ],
+                        "overallPercentage": 0.1111111111111111,
+                        "overallExpectedRows": 1.6666666666666665
+                    }
+                ],
 
-            //   datasets2: [],
               headers: [
-                //   {
-                //       text: 'Definition ID',
-                //       align: 'left',
-                //       sortable: true,
-                //       value: 'definitionId',
-                //       width: '200',
-                      
-                //   },
                   {
                       text: 'Collection ID',
                       value: "collectionId",
@@ -591,20 +461,6 @@ export default {
                       align: 'center',
                       width: '300',
                   },
-                //   {
-                //       // this means the "Rows matched within the Number of rows returned"
-                //       text: 'Revised number of rows',
-                //       value: 'revisedRows',
-                //       align: 'center',
-                //        width: '200',
-                //   },
-                //   {
-                //       text: 'Ratio of values matched',
-                //       value: "probability",
-                //       width: '200',
-                //       align: 'center',
-                     
-                //   },
                 {
                     text: 'Overall hit ratio',
                     value: 'overallPercentage',
@@ -617,9 +473,9 @@ export default {
                     align: 'center',
                     width: '300',
                 },
-                  // Support for multiple LOINC codes
+                // Support for multiple LOINC codes
                 {
-                      // this means the "Rows matched within the Number of rows returned"
+                    // this means the "Rows matched within the Number of rows returned"
                     text: 'Expected hits per LOINC',
                     value: 'revisedRows',
                     align: 'center',
@@ -630,10 +486,10 @@ export default {
                     value: "probability",
                     width: '400',
                     align: 'center',
-                     
+                    
                 },
                 
-              ],
+            ],
               headers2: [
                    {
                       text: 'Collection ID',
@@ -669,21 +525,6 @@ export default {
 
           }
       },
-    //    validations: {
-    //         inputs: [{
-    //             name: {required},
-    //             loincCode: {required},
-    //             value: {
-    //                 fromValue: {required},
-    //                 tovalue: {required}
-    //             }
-
-    //         }]
-    //     },
-
-    //   created() {
-    //       this.getLoincs()
-    //   },
       methods: {
           add() {
               this.inputs.push({
@@ -716,16 +557,9 @@ export default {
 
           },
           toggleQueryType() {
-              //   let copyInputs = [... inputs]
-              //   copyInputs[index] = { rangeQuery: !rangeQuery }
-              // console.log(input)
-              // this.$set(this.inputs, index, input.rangeQuery = !input.rangeQuery)
               this.rangeQuery = !this.rangeQuery
           },
           validateForm() {
-            //    if (this.$refs.form.validate()) {
-            //         this.snackbar = true
-            //     }
                for (let input of this.inputs) {
                       if (input.name === "" || input.loincCode === "" || input.value.fromValue === "" || input.value.toValue === "") {
                            this.valid = false
@@ -755,8 +589,6 @@ export default {
                 const data = [... this.inputs]
                 console.log("DATA TO BACKEND", data)
                 const res = await axios.post(`${this.url}/api/data`, data)
-                //   await new Promise(r => setTimeout(r, 1000));
-                // this.datasets = res.data
                 this.datasetsLoaded = true
                 this.datasets = res.data
                 console.log('RESULTS FROM BACKEND', this.datasets)
@@ -781,22 +613,6 @@ export default {
                   }
               }
           },
-        //   async getLoincs() {
-        //       try {
-        //           const res = await axios.get(`http://localhost:5000/api/loincs`)
-        //           this.loincCodes = res.data
-        //           this.loincsLoaded = true
-        //       } catch (error) {
-        //           this.isLoading = false
-        //           this.errorTitle = 'Something went wrong!'
-
-        //           if (error.response) {
-        //               this.errorDetail = error.response.data.error;
-        //           } else {
-        //               this.errorDetail = error;
-        //           }
-        //       }
-        //   },
           async searchLoinc(event) {
               try {
                   console.log('search LOINC:', event)
@@ -815,20 +631,12 @@ export default {
                   this.currentLoincList = []
                   this.loincErrorTexts = "LOINC code does not exist! Please try another one."
                   setTimeout(() => this.loincErrorTexts = "", 4000)
-                //   this.errorTitle = 'Something went wrong!'
-
-                //   if (error.response) {
-                //       this.errorDetail = error.response.data.error;
-                //   } else {
-                //       this.errorDetail = error;
-                //   }
               }
           },
           checkLoincInput(index) {
               if (typeof this.inputs[index].loincCode != "object") {
                   //this will force a selection on the combobox
                   this.inputs[index].loincCode = ''
-                //   this.validateForm()
               }
           },
           clearQueryData() {
@@ -861,20 +669,6 @@ export default {
               this.overallExpectedHitThreshold = false
               this.overallExpectedHitsPerLoincThreshold = false
           },
-        //   expandRow(event, item) {
-        //       console.log('item', item)
-        //       console.log('event', event)
-        //       console.log('event expanded', event.isExpanded)
-        //     if (event.isExpanded) {
-        //         const index = this.expanded.findIndex(i => i === item);
-        //         this.expanded.splice(index, 1)
-        //     } else {
-        //         this.expanded.push(item);
-        //     }
-        //   },
-        //   showDetails() {
-        //       this.detailedView = true
-        //   },
       },
       computed: {
           errorMessages() {

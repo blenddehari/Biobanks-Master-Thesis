@@ -38,12 +38,6 @@
     </v-app-bar>
 
     <v-main>
-      <!-- <DemoComponent/> -->
-      <!-- <DynamicInput></DynamicInput> -->
-      <!-- <div>
-        <DropDownList @on-item-selected="dropdownSelection = $event" @on-item-reset="dropdownSelection = {}"/>
-        {{ dropdownSelection.name }} 
-      </div> -->
       <div>
         <QueryComponent @on-item-selected="dropdownSelection = $event" @on-item-reset="dropdownSelection = {}"/>
       </div>
@@ -52,24 +46,16 @@
 </template>
 
 <script>
-// import DemoComponent from './components/DemoComponent.vue';
-// import DropDownList from './components/DropDownList.vue';
 import QueryComponent from './components/QueryComponent.vue'
-// import DynamicInput from './components/DynamicInput.vue'
 
 export default {
   name: 'App',
 
   components: {
-    // DemoComponent,
-    // DropDownList,
-    // QueryComponent,
-    // DynamicInput,
     QueryComponent
   },
 
   data: () => ({
-    //
     dropdownSelection: {}
   }),
 };
