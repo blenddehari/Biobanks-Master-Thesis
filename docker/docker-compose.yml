@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  loinc-db:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.loincDB
+    container_name: loincdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: loinc
+    volumes:
+      - loinc-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  collection-manager-db:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.collectionManagerDB
+    container_name: collectionmanagerdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: collection-manager
+    volumes:
+      - collection-manager-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.server
+    container_name: server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PGUSER: postgres
+      # PGPASSWORD: ${DB_PASSWORD}
+      PGDATABASE: collection-manager
+      PGHOST: collection-manager-db
+      LOINC_DB_HOST: loinc-db
+      LOINC_DB_NAME: loinc
+      # JWT_SECRET: ${JWT_SECRET}
+      # ADMIN_USERNAME: ${ADMIN_USERNAME}
+      # ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - 5001:5001
+    networks:
+      - app-network
+
+  client:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.client
+    container_name: client
+    restart: unless-stopped
+    # environment:
+      # REACT_APP_API_URL: http://localhost:5000
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
+volumes:
+  collection-manager-data:
+  loinc-data:
+
+networks:
+  app-network:
