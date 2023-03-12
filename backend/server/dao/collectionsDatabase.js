@@ -3,10 +3,11 @@ const chalk = require('chalk');
 
 
 const pool = new Pool({
-    host: "localhost",
+    host: process.env.DB_2_HOST,
     port: 5432,
-    user: "postgres",
-    database: "collection-manager"
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB_2
 })
 
 pool.on("connect", () => {

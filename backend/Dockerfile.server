@@ -1,30 +1,32 @@
 # Use an official Node.js runtime as a parent image
-FROM node:14-alpine
+FROM node:14.18.0-alpine
 
 # Set the working directory to /app
-WORKDIR /app/backend
+WORKDIR /app
 
 # Copy the package.json and package-lock.json files to the container
-COPY backend/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the backend code to the container
-COPY backend/ .
+COPY / .
+COPY .env ./
+
 
 # Set the environment variables for the PostgreSQL databases
-ENV DB1_HOST=localhost
+# ENV DB1_HOST=localhost
 ENV DB1_PORT=5432
-ENV DB1_USER=postgres
+ENV POSTGRES_USER=postgres
 # ENV DB1_PASSWORD=mysecretpassword1
-ENV DB1_NAME=loinc
+ENV POSTGRES_DB_1=loinc
 
-ENV DB2_HOST=localhost
+# ENV DB2_HOST=localhost
 ENV DB2_PORT=5432
-ENV DB2_USER=postgres
+ENV POSTGRES_USER=postgres
 # ENV DB2_PASSWORD=mysecretpassword2
-ENV DB2_NAME=collection-manager
+ENV POSTGRES_DB_2=collection-manager
 
 # Expose port 5001 for the server API
 EXPOSE 5001

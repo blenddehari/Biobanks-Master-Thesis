@@ -1,0 +1,37 @@
+# Use an official Node runtime as a parent image
+FROM node:14.18.0-alpine as build
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files to the container
+# COPY frontend/package*.json ./
+# COPY /Users/dehble/Desktop/Biobanks/Databanks-demo-project/frontend/package*.json ./
+COPY package*.json ./
+
+
+# Install the dependencies
+RUN npm install
+
+# Copy the rest of the application files to the container
+# COPY /Users/dehble/Desktop/Biobanks/Databanks-demo-project/frontend/ .
+
+COPY package*.json ./
+COPY vue.config.js ./
+COPY babel.config.js ./
+COPY src ./src/
+
+# Build the application
+RUN npm run build
+
+# Use a smaller, production-ready image
+FROM nginx:1.21.3-alpine
+
+# Copy the build output from the previous stage to the nginx web server's default folder
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose the port for nginx
+EXPOSE 80
+
+# Start the nginx server
+CMD ["nginx", "-g", "daemon off;"]

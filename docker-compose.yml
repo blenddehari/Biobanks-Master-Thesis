@@ -8,9 +8,10 @@ services:
     container_name: loincdb
     restart: unless-stopped
     environment:
+      DB_1_HOST: loincdb
       POSTGRES_USER: postgres
-      # POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: loinc
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB_1: loinc
     volumes:
       - loinc-data:/var/lib/postgresql/data
     networks:
@@ -23,9 +24,10 @@ services:
     container_name: collectionmanagerdb
     restart: unless-stopped
     environment:
+      DB_2_HOST: collectionmanagerdb
       POSTGRES_USER: postgres
-      # POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: collection-manager
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB_2: collection-manager
     volumes:
       - collection-manager-data:/var/lib/postgresql/data
     networks:
@@ -38,16 +40,10 @@ services:
     container_name: server
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      PGUSER: postgres
-      # PGPASSWORD: ${DB_PASSWORD}
-      PGDATABASE: collection-manager
-      PGHOST: collection-manager-db
-      LOINC_DB_HOST: loinc-db
-      LOINC_DB_NAME: loinc
-      # JWT_SECRET: ${JWT_SECRET}
-      # ADMIN_USERNAME: ${ADMIN_USERNAME}
-      # ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB_1: loinc
+      POSTGRES_DB_2: collection-manager
     volumes:
       - ./backend:/usr/src/app
     ports:
