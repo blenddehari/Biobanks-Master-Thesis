@@ -71,11 +71,6 @@ class HelperFunctions {
         let def3 = dataSample10.anonymizations[2]
         console.log(def3)
 
-        // for (let i = 4; i < 10; i++) {
-        //     console.log(`bigDataTable${i}`)
-        //     return this.parseData(bigDataTable1)
-        // }
-
         let res = this.parseData(def2)
 
         return res

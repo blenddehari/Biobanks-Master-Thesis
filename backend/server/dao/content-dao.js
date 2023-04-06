@@ -6,7 +6,7 @@ pool.connect()
 
 class ContentDAO {
     async getLoincs() {
-        const query = `select loinc_num as loincNum, component as loincComponent from loinc`
+        const query = `select loinc_num as loincNum, component as loincComponent from public.loinc`
     
         const res = await pool.query(query)
         return res.rows
@@ -16,13 +16,13 @@ class ContentDAO {
         let searchByCode = helperFunctions.isNumeric(searchString)
 
         if (searchByCode) {
-            const query = `select loinc_num as loincNum, component as loincComponent from loinc where loinc_num LIKE '${searchString}%'`
+            const query = `select loinc_num as loincNum, component as loincComponent from public.loinc where loinc_num LIKE '${searchString}%'`
         
             const res = await pool.query(query)
             return res.rows
         }
         else if (typeof searchString == 'string') {
-            const query = `select loinc_num as loincNum, component as loincComponent from loinc where component LIKE '%${searchString}%'`
+            const query = `select loinc_num as loincNum, component as loincComponent from public.loinc where component LIKE '%${searchString}%'`
         
             const res = await pool.query(query)
             return res.rows

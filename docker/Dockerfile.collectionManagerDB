@@ -1,5 +1,5 @@
-FROM postgres:13.4-alpine
+FROM postgres:14.2-alpine
 ENV POSTGRES_USER postgres
-# ENV POSTGRES_PASSWORD mysecretpassword
+ENV POSTGRES_PASSWORD mypassword
 ENV POSTGRES_DB collection-manager
 COPY collection_manager_db.sql /docker-entrypoint-initdb.d/

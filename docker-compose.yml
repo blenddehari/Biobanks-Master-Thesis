@@ -38,16 +38,23 @@ services:
       context: ./backend
       dockerfile: Dockerfile.server
     container_name: server
+    command: npm run start
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB_1: loinc
       POSTGRES_DB_2: collection-manager
+      DB_1_HOST: loinc-db
+      DB_2_HOST: collection-manager-db
     volumes:
-      - ./backend:/usr/src/app
+      - ./backend:/app
+      - /app/node_modules
     ports:
       - 5001:5001
+    depends_on:
+      - loinc-db
+      - collection-manager-db
     networks:
       - app-network
 
@@ -57,18 +64,25 @@ services:
       dockerfile: Dockerfile.client
     container_name: client
     restart: unless-stopped
-    # environment:
-      # REACT_APP_API_URL: http://localhost:5000
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/app
     ports:
-      - 8080:8080
+      - 8080:80
+    depends_on:
+      - loinc-db
+      - collection-manager-db
+      - server
     networks:
       - app-network
 
 volumes:
   collection-manager-data:
+    driver: local
   loinc-data:
+    driver: local
+  server:
+    driver: local
 
 networks:
   app-network:
+    driver: bridge
