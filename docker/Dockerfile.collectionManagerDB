@@ -1,5 +1,7 @@
 FROM postgres:14.2-alpine
-ENV POSTGRES_USER postgres
-ENV POSTGRES_PASSWORD mypassword
-ENV POSTGRES_DB collection-manager
-COPY collection_manager_db.sql /docker-entrypoint-initdb.d/
+ENV POSTGRES_USER_2 postgres
+ENV POSTGRES_PASSWORD_2 mypassword
+ENV POSTGRES_DB_2 collection-manager
+RUN rm -rf /var/lib/postgresql/data/*
+COPY cm_dump.sql /docker-entrypoint-initdb.d/
+RUN rm -rf /var/lib/postgresql/data/*

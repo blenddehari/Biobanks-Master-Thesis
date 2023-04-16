@@ -2,34 +2,56 @@ version: '3'
 
 services:
   loinc-db:
+    # image: postgres:14.2
     build:
       context: ./docker
       dockerfile: Dockerfile.loincDB
     container_name: loincdb
     restart: unless-stopped
     environment:
-      DB_1_HOST: loincdb
+      DB_1_HOST: loinc-db
+      # POSTGRES_USER_1: postgres
+      # POSTGRES_PASSWORD_1: mypassword
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB_1: loinc
-    volumes:
-      - loinc-data:/var/lib/postgresql/data
+      # POSTGRES_DB_1: loinc
+      POSTGRES_DB: loinc
+      # DB_1_PORT: 5435
+      PGDATA: /var/lib/postgresql/data/loinc
+    # volumes:
+    #   - loinc:/var/lib/postgresql/data
+      # - loinc-data:/var/lib/postgresql/data
+      # - ./pgdata:/var/lib/postgresql/data
+    # ports:
+    #   - "5435:5432"
     networks:
       - app-network
 
   collection-manager-db:
+    # image: postgres:14.2
     build:
       context: ./docker
       dockerfile: Dockerfile.collectionManagerDB
     container_name: collectionmanagerdb
     restart: unless-stopped
     environment:
-      DB_2_HOST: collectionmanagerdb
+      DB_2_HOST: collection-manager-db
+      # POSTGRES_USER_2: postgres
+      # POSTGRES_PASSWORD_2: mypassword
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB_2: collection-manager
-    volumes:
-      - collection-manager-data:/var/lib/postgresql/data
+      # POSTGRES_DB_2: collection-manager
+      POSTGRES_DB: collection-manager
+      # DB_2_PORT: 5436
+      PGDATA: /var/lib/postgresql/data/collection-manager
+    # volumes:
+    #   - collection-manager:/var/lib/postgresql/data
+      # - collection-manager-data:/var/lib/postgresql/data
+      # - ./pgdata:/var/lib/postgresql/data
+    # ports:
+    #   - "5436:5432"
+    depends_on:
+      - loinc-db
     networks:
       - app-network
 
@@ -41,9 +63,13 @@ services:
     command: npm run start
     restart: unless-stopped
     environment:
+      # POSTGRES_USER_1: postgres
+      # POSTGRES_PASSWORD_1: mypassword
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB_1: loinc
+      # POSTGRES_USER_2: postgres
+      # POSTGRES_PASSWORD_2: mypassword
       POSTGRES_DB_2: collection-manager
       DB_1_HOST: loinc-db
       DB_2_HOST: collection-manager-db
@@ -76,10 +102,10 @@ services:
       - app-network
 
 volumes:
-  collection-manager-data:
-    driver: local
-  loinc-data:
-    driver: local
+  # collection-manager:
+  #   driver: local
+  # loinc:
+  #   driver: local
   server:
     driver: local
 

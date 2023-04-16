@@ -1,5 +1,7 @@
 FROM postgres:14.2-alpine
-ENV POSTGRES_USER postgres
-ENV POSTGRES_PASSWORD mypassword
-ENV POSTGRES_DB loinc
-COPY loinc_db.sql /docker-entrypoint-initdb.d/
+ENV POSTGRES_USER_1 postgres
+ENV POSTGRES_PASSWORD_1 mypassword
+ENV POSTGRES_DB_1 loinc
+RUN rm -rf /var/lib/postgresql/data/*
+COPY loinc_dump.sql /docker-entrypoint-initdb.d/
+RUN rm -rf /var/lib/postgresql/data/*
