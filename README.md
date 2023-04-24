@@ -15,6 +15,7 @@ The project is fully dockerized, so if you have Docker installed and want to use
 3. As an example for testing, you can search by the following LOINC codes:
 * LOINC 39243-1 (Second hand smoke exposure), with values: 10.04-10.06
 * LOINC 39004-7 (Epidermal growth factor receptor Ag), with values: 1000-2000
+
 Note: Do not use the dash character ("-") when searching (i.e. for LOINC "39243-1" you can type "39243" in the search box and press enter, and you will get back a list of all LOINCs of that group where you can then select "39243-1" from the list.
 
 4. Please fill in the attribute name as anything (“test”, “test1”). If you want to search with more variations you can take a look at the values we have in the database (table name: “speed_up_tables_4”). In the aforementioned example for searching, I used range values, so you need to switch on the “Range Query”in the UI.
@@ -60,6 +61,7 @@ If you do not wish to use Docker for any reason, here are the steps to replicate
 10. As an example, you can search by the following LOINC codes: 
 * LOINC 39243-1 (Second hand smoke exposure), with values: 10.04-10.06
 * LOINC 39004-7 (Epidermal growth factor receptor Ag), with values: 1000-2000
+
 Note: Do not use the dash character ("-") when searching (i.e. for LOINC "39243-1" you can type "39243" in the search box and press enter, and you will get back a list of all LOINCs of that group where you can then select "39243-1" from the list.
 
 11. Please fill in the attribute name as anything (“test”, “test1”). If you want to search with more variations you can take a look at the values we have in the database (table name: “speed_up_tables_4”). In the aforementioned example for searching, I used range values, so you need to switch on the “Range Query”in the UI.
