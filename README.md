@@ -1,6 +1,6 @@
 README
 
-Fork the repository in your local environment and checkout to branch "master"
+Clone the repository in your local environment and checkout to branch "master"
 
 Using Docker to start the project - the easy and most convenient way
 
@@ -15,10 +15,12 @@ The project is fully dockerized, so if you have Docker installed and want to use
 3. As an example for testing, you can search by the following LOINC codes:
 * LOINC 39243-1 (Second hand smoke exposure), with values: 10.04-10.06
 * LOINC 39004-7 (Epidermal growth factor receptor Ag), with values: 1000-2000
+Note: Do not use the dash character ("-") when searching (i.e. for LOINC "39243-1" you can type "39243" in the search box and press enter, and you will get back a list of all LOINCs of that group where you can then select "39243-1" from the list.
 
 4. Please fill in the attribute name as anything (“test”, “test1”). If you want to search with more variations you can take a look at the values we have in the database (table name: “speed_up_tables_4”). In the aforementioned example for searching, I used range values, so you need to switch on the “Range Query”in the UI.
-5. You are ready to go, press the search button and analyse the results. You just got a ranked list of collections and biobanks with a hit ratio and number of hits matched for each of them, and on opening the rows you can see the same designated analytics per every LOINC code you searched for :) 
-Contact the biobank that whose collection fits your research purposes best and keep on innovating the medical field!  
+
+5. You are ready to go, press the search button and analyse the results. You just got a ranked list of collections and biobanks with a hit ratio and number of hits matched for each of them, and on expanding the rows you can see the same designated analytics per every LOINC you searched for :) 
+Contact the biobank whose collection fits your research purposes best and keep on innovating the medical field!  
 
 
 If you are not using Docker and want to manually start everything - the hard and inconvenient way
@@ -55,12 +57,13 @@ If you do not wish to use Docker for any reason, here are the steps to replicate
 
 9. The client runs on port 8080 and the api runs in port 5001. Make port 5001 is free, or change it to your desired port in file: backend/.env
 
-
 10. As an example, you can search by the following LOINC codes: 
 * LOINC 39243-1 (Second hand smoke exposure), with values: 10.04-10.06
 * LOINC 39004-7 (Epidermal growth factor receptor Ag), with values: 1000-2000
+Note: Do not use the dash character ("-") when searching (i.e. for LOINC "39243-1" you can type "39243" in the search box and press enter, and you will get back a list of all LOINCs of that group where you can then select "39243-1" from the list.
 
 11. Please fill in the attribute name as anything (“test”, “test1”). If you want to search with more variations you can take a look at the values we have in the database (table name: “speed_up_tables_4”). In the aforementioned example for searching, I used range values, so you need to switch on the “Range Query”in the UI.
-12. You are ready to go, press the search button and analyse the results. You just got a ranked list of collections and biobanks with a hit ratio and number of hits matched for each of them, and on opening the rows you can see the same designated analytics per every LOINC code you searched for :)  
-Contact the biobank that whose collection fits your research purposes best and keep on innovating the medical field!  
+
+12. You are ready to go, press the search button and analyse the results. You just got a ranked list of collections and biobanks with a hit ratio and number of hits matched for each of them, and on opening the rows you can see the same designated analytics per every LOINC you searched for :)
+Contact the biobank whose collection fits your research purposes best and keep on innovating the medical field!  
 
